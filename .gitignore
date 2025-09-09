@@ -1,0 +1,18 @@
+# Node / React
+frontend/node_modules/
+frontend/build/
+frontend/.env
+
+# Visual Studio / .NET
+backend/bin/
+backend/obj/
+backend/*.user
+backend/*.suo
+backend/.vs
+backend/.vscode/
+
+# Base de datos SQLite
+backend/*.db
+
+# Logs
+*.log
