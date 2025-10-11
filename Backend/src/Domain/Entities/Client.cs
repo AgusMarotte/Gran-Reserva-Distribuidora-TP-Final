@@ -2,8 +2,37 @@ namespace Domain.Entities
 {
     public class Client : User
     {
-        public int Points { get; set; }
-    }
-}
+        public int Points { get; private set; }
 
-// TO-DO: Agregar relaciones
+        public ICollection<Order> Orders { get; private set; } = new List<Order>();
+
+        public ICollection<Exchange> Exchanges { get; private set; } = new List<Exchange>();
+    
+        public Client() : base() { }
+
+        public Client(string clientName, string lastName, string email, string password)
+            : base(clientName, lastName, email, password)
+        {
+            Points = 0;
+        }
+
+        public void AddPoints(int points)
+        {
+            if (points < 0)
+                throw new ArgumentException("Los puntos a sumar no pueden ser negativos.");
+
+            Points += points;
+        }
+
+        public void RedeemPoints(int points)
+        {
+            if (points < 0)
+                throw new ArgumentException("Los puntos a canjear no pueden ser negativos.");
+            if (points > Points)
+                throw new InvalidOperationException("No tienes puntos suficientes para canjear.");
+
+            Points -= points;
+        }
+    }
+
+}
