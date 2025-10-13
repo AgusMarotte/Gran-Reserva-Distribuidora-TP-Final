@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Entities
 {
     public abstract class User
@@ -12,12 +14,13 @@ namespace Domain.Entities
 
         protected User() { }
 
-        protected User(string clientName, string lastName, string email, string password)
+        protected User(string clientName, string lastName, string email, string password, UserRole role)
         {
             ClientName = clientName;
             LastName = lastName;
             Email = email;
             Password = password;
+            Role = role;
         }
 
         public void SetPassword(string newPassword)
@@ -31,7 +34,5 @@ namespace Domain.Entities
             LastName = lastName;
             Email = email;
         }
-
     }
-
 }

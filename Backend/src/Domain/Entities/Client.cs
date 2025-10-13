@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Entities
 {
     public class Client : User
@@ -5,13 +7,12 @@ namespace Domain.Entities
         public int Points { get; private set; }
 
         public ICollection<Order> Orders { get; private set; } = new List<Order>();
-
         public ICollection<Exchange> Exchanges { get; private set; } = new List<Exchange>();
-    
+
         public Client() : base() { }
 
         public Client(string clientName, string lastName, string email, string password)
-            : base(clientName, lastName, email, password)
+            : base(clientName, lastName, email, password, UserRole.Client)
         {
             Points = 0;
         }
@@ -34,5 +35,4 @@ namespace Domain.Entities
             Points -= points;
         }
     }
-
 }
