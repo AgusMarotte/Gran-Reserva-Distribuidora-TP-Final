@@ -8,6 +8,8 @@ namespace Domain.Entities
         public string Email { get; private set; } 
         public string Password { get; private set; }
 
+        public UserRole Role { get; protected set; }
+
         protected User() { }
 
         protected User(string clientName, string lastName, string email, string password)
