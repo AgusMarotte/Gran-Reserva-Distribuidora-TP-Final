@@ -18,9 +18,9 @@ namespace Web.Controllers
             _userRepository = userRepository;
         }
 
-        //private static List<User> Users = new List<User>();
+        private static List<User> Users = new List<User>();
         // ----------- LOGIN -----------
-        /*
+        
         [HttpPost("login")]
        public ActionResult<string> Login([FromQuery] string email, [FromQuery] string password)
         {
@@ -74,17 +74,17 @@ namespace Web.Controllers
 
             }
 
-        }*/
+        }
 
 
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_userRepository.Get());
+            return Ok(_userRepository.GetAll());
         }
 
-
+        /*
         [HttpPost]
         public IActionResult Add([FromBody] UserDTO userdto)
         {
@@ -96,8 +96,9 @@ namespace Web.Controllers
                 Password = userdto.Password,
                 Role = "Client"
             };
-            return Ok(_userRepository.Add(user);
+            return Ok(_userRepository.Add(user));
         }
+        */
     }
 
     
