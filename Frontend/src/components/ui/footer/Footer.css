@@ -1,0 +1,78 @@
+.footer {
+  width: 100%;
+  background-color: rgba(132, 52, 54, 1);
+  backdrop-filter: blur(0px);
+  color: white;
+  padding: 25px;
+  text-align: center;
+  margin-top: 115px;
+  font-family: system-ui, sans-serif;
+}
+
+.footer-waves {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transform: translateY(-100%);
+  overflow: hidden;
+}
+
+.footer-waves-svg {
+  display: block;
+  width: 100%;
+  height: 120px;
+}
+
+/* --- Animación de las olas --- */
+.wave-1 {
+  animation: wave-move 75s linear infinite;
+}
+
+.wave-2 {
+  animation: wave-move 55s linear infinite;
+}
+
+.wave-3 {
+  animation: wave-move 30s linear infinite;
+}
+
+.wave-4 {
+  animation: wave-move 15s linear infinite;
+}
+
+@keyframes wave-move {
+  0% {
+    transform: translateX(-90px);
+  }
+  100% {
+    transform: translateX(85px);
+  }
+}
+
+.footer-content {
+  max-width: 80rem; /* max-w-5xl */
+  margin: 0 auto;
+}
+
+.footer-content p {
+  margin: 0;
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem; /* gap-x-6 */
+  margin-top: 0.75rem; /* mt-3 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.footer-link {
+  color: #d1d5db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #ffffff;
+}

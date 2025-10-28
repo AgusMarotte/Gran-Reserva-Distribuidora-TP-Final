@@ -8,7 +8,6 @@ namespace Domain.Entities
         public DateTime Date { get; set; }       
         public int PointsUsed { get; set; }      
         public string QrCode { get; set; }       
-
         public int ClientId { get; set; }        
         public Client Client { get; set; }
 

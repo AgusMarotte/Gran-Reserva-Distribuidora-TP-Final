@@ -1,15 +1,18 @@
 using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
     public abstract class User
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; private set; }
         public string ClientName { get; private set; }
         public string LastName { get; private set; } 
         public string Email { get; private set; } 
         public string Password { get; private set; }
-
         public UserRole Role { get; protected set; }
 
         protected User() { }
