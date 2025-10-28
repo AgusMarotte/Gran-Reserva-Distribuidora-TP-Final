@@ -1,17 +1,15 @@
 
+using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Domain.Entities
 {
-    public enum DeliveryType
-    {
-        Home,       
-        Branch,    
-        Express     
-    }
-
     public class Delivery
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
         public DeliveryType Type { get; set; }
         public string Branch { get; set; }   
         public string Field { get; set; }    
