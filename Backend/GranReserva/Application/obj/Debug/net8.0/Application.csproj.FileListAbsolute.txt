@@ -1,0 +1,16 @@
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\bin\Debug\net8.0\Application.deps.json
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\bin\Debug\net8.0\Application.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\bin\Debug\net8.0\Application.pdb
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\bin\Debug\net8.0\Domain.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\bin\Debug\net8.0\Domain.pdb
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.csproj.AssemblyReference.cache
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.GeneratedMSBuildEditorConfig.editorconfig
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.AssemblyInfoInputs.cache
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.AssemblyInfo.cs
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.csproj.CoreCompileInputs.cache
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.sourcelink.json
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Applicat.44B5EDA2.Up2Date
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\refint\Application.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\Application.pdb
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Application\obj\Debug\net8.0\ref\Application.dll

@@ -1,0 +1,12 @@
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\bin\Debug\net8.0\Domain.deps.json
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\bin\Debug\net8.0\Domain.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\bin\Debug\net8.0\Domain.pdb
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.sourcelink.json
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\refint\Domain.dll
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\Domain.pdb
+E:\Files\GitHub\Gran-Reserva-Distribuidora-TP-Final\Backend\GranReserva\Domain\obj\Debug\net8.0\ref\Domain.dll

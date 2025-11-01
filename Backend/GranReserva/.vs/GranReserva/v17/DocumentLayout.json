@@ -1,0 +1,181 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5A4AA387-E316-47E4-9E5C-19D3F8E3E715}|Presentation\\Presentation.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\presentation\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5A4AA387-E316-47E4-9E5C-19D3F8E3E715}|Presentation\\Presentation.csproj|solutionrelative:presentation\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\application\\services\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|solutionrelative:application\\services\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\application\\interfaces\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|solutionrelative:application\\interfaces\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\application\\models\\request\\creationproductdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|solutionrelative:application\\models\\request\\creationproductdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\application\\models\\request\\updateproductdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AFD725A8-D7B0-4685-860E-C67797683899}|Application\\Application.csproj|solutionrelative:application\\models\\request\\updateproductdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{90A9D3E9-0642-4E63-BFB3-A4E6D19AD2EF}|Infrastructure\\Infrastructure.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\infrastructure\\repositories\\productrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{90A9D3E9-0642-4E63-BFB3-A4E6D19AD2EF}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\repositories\\productrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{90A9D3E9-0642-4E63-BFB3-A4E6D19AD2EF}|Infrastructure\\Infrastructure.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\infrastructure\\repositories\\repositorybase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{90A9D3E9-0642-4E63-BFB3-A4E6D19AD2EF}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\repositories\\repositorybase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{207B128B-50BC-4AD1-BC2D-07F466C02FE5}|Domain\\Domain.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\domain\\interfaces\\iproductrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{207B128B-50BC-4AD1-BC2D-07F466C02FE5}|Domain\\Domain.csproj|solutionrelative:domain\\interfaces\\iproductrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{207B128B-50BC-4AD1-BC2D-07F466C02FE5}|Domain\\Domain.csproj|e:\\files\\github\\gran-reserva-distribuidora-tp-final\\backend\\granreserva\\domain\\interfaces\\irepositorybase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{207B128B-50BC-4AD1-BC2D-07F466C02FE5}|Domain\\Domain.csproj|solutionrelative:domain\\interfaces\\irepositorybase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{fbcae063-e2c0-4ab1-a516-996ea3dafb72}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Presentation\\Controllers\\ProductController.cs",
+              "RelativeDocumentMoniker": "Presentation\\Controllers\\ProductController.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Presentation\\Controllers\\ProductController.cs",
+              "RelativeToolTip": "Presentation\\Controllers\\ProductController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:56:43.18Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CreationProductDTO.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Models\\Request\\CreationProductDTO.cs",
+              "RelativeDocumentMoniker": "Application\\Models\\Request\\CreationProductDTO.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Models\\Request\\CreationProductDTO.cs",
+              "RelativeToolTip": "Application\\Models\\Request\\CreationProductDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:55:56.15Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UpdateProductDTO.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Models\\Request\\UpdateProductDTO.cs",
+              "RelativeDocumentMoniker": "Application\\Models\\Request\\UpdateProductDTO.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Models\\Request\\UpdateProductDTO.cs",
+              "RelativeToolTip": "Application\\Models\\Request\\UpdateProductDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:55:52.422Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "RepositoryBase.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Infrastructure\\Repositories\\RepositoryBase.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Repositories\\RepositoryBase.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Infrastructure\\Repositories\\RepositoryBase.cs",
+              "RelativeToolTip": "Infrastructure\\Repositories\\RepositoryBase.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAIwC4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:48:10.378Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ProductService.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Services\\ProductService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\ProductService.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Services\\ProductService.cs",
+              "RelativeToolTip": "Application\\Services\\ProductService.cs",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAmwG8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:51:02.375Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IProductService.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Interfaces\\IProductService.cs",
+              "RelativeDocumentMoniker": "Application\\Interfaces\\IProductService.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Application\\Interfaces\\IProductService.cs",
+              "RelativeToolTip": "Application\\Interfaces\\IProductService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:50:09.435Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ProductRepository.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Infrastructure\\Repositories\\ProductRepository.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Repositories\\ProductRepository.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Infrastructure\\Repositories\\ProductRepository.cs",
+              "RelativeToolTip": "Infrastructure\\Repositories\\ProductRepository.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAgwCgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:48:59.008Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IRepositoryBase.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Domain\\Interfaces\\IRepositoryBase.cs",
+              "RelativeDocumentMoniker": "Domain\\Interfaces\\IRepositoryBase.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Domain\\Interfaces\\IRepositoryBase.cs",
+              "RelativeToolTip": "Domain\\Interfaces\\IRepositoryBase.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-01T18:46:47.12Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IProductRepository.cs",
+              "DocumentMoniker": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Domain\\Interfaces\\IProductRepository.cs",
+              "RelativeDocumentMoniker": "Domain\\Interfaces\\IProductRepository.cs",
+              "ToolTip": "E:\\Files\\GitHub\\Gran-Reserva-Distribuidora-TP-Final\\Backend\\GranReserva\\Domain\\Interfaces\\IProductRepository.cs",
+              "RelativeToolTip": "Domain\\Interfaces\\IProductRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-30T04:08:07.399Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
