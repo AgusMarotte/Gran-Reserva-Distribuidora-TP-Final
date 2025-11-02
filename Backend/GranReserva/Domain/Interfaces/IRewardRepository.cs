@@ -2,9 +2,11 @@ using Domain.Entities;
 
 namespace Domain.Interfaces
 {
-    public interface IRewardRepository
+    public interface IRewardRepository : IRepositoryBase<Reward>
     {
-        Task<Reward> GetByIdAsync(int id);
-        Task<List<Reward>> GetAllAsync();
+        Task<Reward> GetActiveByIdAsync(int id);
+        Task<List<Reward>> GetActiveAllAsync();
+        Task DeleteSoftAsync(Reward reward);
+        Task RestoreAsync(Reward reward);
     }
 }
