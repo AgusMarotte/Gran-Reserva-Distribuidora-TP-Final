@@ -1,5 +1,5 @@
 using Application.Interfaces;
-using Domain.Entities;
+using Application.Models;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -13,14 +13,16 @@ namespace Application.Services
             _rewardRepository = rewardRepository;
         }
 
-        public async Task<Reward> GetRewardByIdAsync(int id)
+        public async Task<RewardDTO> GetRewardByIdAsync(int id)
         {
-            return await _rewardRepository.GetByIdAsync(id);
+            var reward = await _rewardRepository.GetByIdAsync(id);
+            return RewardDTO.Create(reward);
         }
 
-        public async Task<List<Reward>> GetAllRewardsAsync()
+        public async Task<List<RewardDTO>> GetAllRewardsAsync()
         {
-            return await _rewardRepository.GetAllAsync();
+            var rewards = await _rewardRepository.GetAllAsync();
+            return RewardDTO.CreateList(rewards);
         }
     }
 }

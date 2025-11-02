@@ -1,11 +1,10 @@
-using Domain.Entities;
+using Application.Models;
 
 namespace Application.Interfaces
 {
     public interface IRewardService
-    
     {
-        Task<Reward> GetRewardByIdAsync(int id);
-        Task<List<Reward>> GetAllRewardsAsync();
+        Task<RewardDTO> GetRewardByIdAsync(int id);
+        Task<List<RewardDTO>> GetAllRewardsAsync();
     }
 }
