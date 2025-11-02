@@ -2,9 +2,12 @@ using Domain.Entities;
 
 namespace Domain.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepositoryBase<User>
     {
-        Task<User> GetByIdAsync(int id);
-        Task<List<User>> GetAllAsync();
+        Task<User> GetActiveByIdAsync(int id);
+        Task<List<User>> GetActiveAllAsync();
+        Task DeleteSoftAsync(User user);
+        Task RestoreAsync(User user);
+        Task<User> GetByNameAndLastNameAsync(string name, string lastName);
     }
 }
