@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,12 +14,12 @@ namespace Infrastructure.Data.Configurations
             builder.HasKey(u => u.Id);
             builder.Property(u => u.Id)
                 .IsRequired()
-		            .ValueGeneratedOnAdd();
+                .ValueGeneratedOnAdd();
 
             builder.Property(u => u.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-            
+
             builder.Property(u => u.LastName)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -26,16 +27,21 @@ namespace Infrastructure.Data.Configurations
             builder.Property(u => u.Email)
                 .IsRequired()
                 .HasMaxLength(255);
-            
+
             builder.HasIndex(u => u.Email)
                 .IsUnique();
-            
+
             builder.Property(u => u.Password)
                 .IsRequired();
-            
+
             builder.Property(u => u.Role)
                 .IsRequired()
                 .HasConversion<string>();
+
+            builder.HasDiscriminator<UserRole>("Role")
+                .HasValue<User>(UserRole.Admin)
+                .HasValue<User>(UserRole.SuperAdmin)
+                .HasValue<Client>(UserRole.User);
         }
     }
 }
