@@ -1,41 +1,27 @@
 using Domain.Entities;
 using Domain.Interfaces;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
     public class RewardRepository : IRewardRepository
     {
-        private readonly List<Reward> _rewards = new List<Reward>
+        private readonly ApplicationDbContext _context;
+
+        public RewardRepository(ApplicationDbContext context)
         {
-            new Reward
-            {
-                Id = 1,
-                Name = "Gorra Gran Reserva",
-                Description = "Gorra de edición limitada.",
-                PointsRequired = 500,
-                Stock = 100,
-                ImageUrl = "https://placehold.co/600x400?text=Gorra+Gran+Reserva"
-            },
-            new Reward
-            {
-                Id = 2,
-                Name = "Descuento 15%",
-                Description = "15% de descuento en tu próxima compra.",
-                PointsRequired = 1000,
-                Stock = 50,
-                ImageUrl = "https://placehold.co/600x400?text=Descuento+15%"
-            }
-        };
+            _context = context;
+        }
 
         public async Task<Reward> GetByIdAsync(int id)
         {
-            var reward = _rewards.FirstOrDefault(r => r.Id == id);
-            return await Task.FromResult(reward);
+            return await _context.Rewards.FindAsync(id);
         }
 
         public async Task<List<Reward>> GetAllAsync()
         {
-            return await Task.FromResult(_rewards);
+            return await _context.Rewards.ToListAsync();
         }
     }
 }
