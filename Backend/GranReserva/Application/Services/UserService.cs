@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Models;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -13,14 +14,16 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<UserDTO> GetUserByIdAsync(int id)
         {
-            return await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
+            return UserDTO.Create(user);
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<List<UserDTO>> GetAllUsersAsync()
         {
-            return await _userRepository.GetAllAsync();
+            var users = await _userRepository.GetAllAsync();
+            return UserDTO.CreateList(users);
         }
     }
 }
