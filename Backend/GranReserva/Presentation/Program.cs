@@ -43,7 +43,8 @@ builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<IRewardRepository, RewardRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-
+builder.Services.AddScoped<IRewardExchangeService, RewardExchangeService>();
+builder.Services.AddScoped<IRewardExchangeRepository, RewardExchangeRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

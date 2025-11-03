@@ -15,6 +15,7 @@ namespace Infrastructure.Data
         public DbSet<Reward> Rewards { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<RewardExchange> RewardExchanges { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
