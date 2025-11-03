@@ -29,7 +29,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
 
@@ -41,6 +41,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IRewardService, RewardService>();
 builder.Services.AddScoped<IRewardRepository, RewardRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
