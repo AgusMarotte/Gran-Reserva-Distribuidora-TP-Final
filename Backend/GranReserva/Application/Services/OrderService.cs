@@ -1,6 +1,7 @@
 using Application.Interfaces;
+using Application.Models;
+using Application.Models.Request;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
@@ -19,37 +20,48 @@ namespace Application.Services
             _clientRepository = clientRepository;
         }
 
-        public async Task<Order> GetOrderByIdAsync(int id, bool includesoftdeleted = false)
+        public async Task<OrderDTO> GetOrderByIdAsync(int id, bool includesoftdeleted = false)
         {
             var order = includesoftdeleted
                 ? await _orderRepository.GetByIdAsync(id)
                 : await _orderRepository.GetActiveByIdAsync(id);
-            return order;
+            
+            return OrderDTO.Create(order);
         }
 
-        public async Task<List<Order>> GetAllOrdersAsync(bool includesoftdeleted = false)
+        public async Task<List<OrderDTO>> GetAllOrdersAsync(bool includesoftdeleted = false)
         {
             var orders = includesoftdeleted
                 ? await _orderRepository.GetAllAsync()
                 : await _orderRepository.GetActiveAllAsync();
-            return orders;
+            
+            return OrderDTO.CreateList(orders);
         }
 
-        public async Task<List<Order>> GetOrdersByClientIdAsync(int clientId)
+        public async Task<List<OrderDTO>> GetOrdersByClientIdAsync(int clientId)
         {
-            return await _orderRepository.GetActiveOrdersByClientIdAsync(clientId);
+            var orders = await _orderRepository.GetActiveOrdersByClientIdAsync(clientId);
+            return OrderDTO.CreateList(orders);
         }
 
-        public async Task<Order> CreateOrderAsync(Order order)
+        public async Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto)
         {
-            var client = await _clientRepository.GetByIdAsync(order.ClientId);
+            var client = await _clientRepository.GetByIdAsync(orderdto.ClientId);
             if (client == null || client.IsDeleted)
             {
                 throw new ValidationException("El cliente no existe o no está activo.");
             }
 
+            var newOrder = new Order
+            {
+                ClientId = orderdto.ClientId,
+                Date = DateTime.UtcNow,
+                State = Domain.Enums.OrderStatus.Pending
+            };
+
             int total = 0;
-            foreach (var item in order.OrderDetails)
+
+            foreach (var item in orderdto.Items)
             {
                 var product = await _productRepository.GetActiveByIdAsync(item.ProductId);
                 if (product == null)
@@ -64,28 +76,38 @@ namespace Application.Services
                 product.Stock -= item.Amount;
                 await _productRepository.UpdateAsync(product);
 
-                item.UnitaryPrice = product.Price;
+                var orderDetail = new OrderDetail
+                {
+                    Order = newOrder,
+                    ProductId = product.Id,
+                    Amount = item.Amount,
+                    UnitaryPrice = product.Price
+                };
+
+                newOrder.OrderDetails.Add(orderDetail);
                 total += (product.Price * item.Amount);
             }
 
-            order.Total = total;
-            order.State = OrderStatus.Pending;
-            order.Date = DateTime.UtcNow;
+            newOrder.Total = total;
             
             client.Points += (total / 100);
             await _clientRepository.UpdateAsync(client);
 
-            return await _orderRepository.AddAsync(order);
+            var createdOrder = await _orderRepository.AddAsync(newOrder);
+            
+            var fullOrder = await _orderRepository.GetActiveByIdAsync(createdOrder.Id);
+            return OrderDTO.Create(fullOrder);
         }
 
-        public async Task<bool> UpdateOrderStateAsync(int id, OrderStatus newState)
+        public async Task<bool> UpdateOrderStateAsync(int id, UpdateOrderStateDTO orderdto)
         {
             var order = await _orderRepository.GetActiveByIdAsync(id);
             if (order == null)
             {
                 return false;
             }
-            order.State = newState;
+            
+            order.State = orderdto.NewState;
             await _orderRepository.UpdateAsync(order);
             return true;
         }
@@ -108,15 +130,16 @@ namespace Application.Services
             }
         }
 
-        public async Task<Order> RestoreOrderAsync(int id)
+        public async Task<OrderDTO> RestoreOrderAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null || order.IsDeleted == false)
             {
                 return null;
             }
+            
             await _orderRepository.RestoreAsync(order);
-            return order;
+            return OrderDTO.Create(order);
         }
     }
 }
