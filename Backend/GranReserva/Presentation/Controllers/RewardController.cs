@@ -60,7 +60,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> RestoreReward(int id)
         {
             var reward = await _rewardService.RestoreRewardAsync(id);

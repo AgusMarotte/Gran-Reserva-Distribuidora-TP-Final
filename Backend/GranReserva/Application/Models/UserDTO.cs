@@ -11,6 +11,7 @@ namespace Application.Models
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public UserRole Role { get; set; }
+        public int? Points { get; set; }
 
         public static UserDTO Create(User user)
         {
@@ -27,13 +28,18 @@ namespace Application.Models
             dto.Email = user.Email;
             dto.Role = user.Role;
 
+            if (user is Client client)
+            {
+                dto.Points = client.Points;
+            }
+
             return dto;
         }
 
         public static List<UserDTO> CreateList(List<User> userList)
         {
             var dtoList = new List<UserDTO>();
-            foreach(var u in userList)
+            foreach (var u in userList)
             {
                 dtoList.Add(Create(u));
             }
