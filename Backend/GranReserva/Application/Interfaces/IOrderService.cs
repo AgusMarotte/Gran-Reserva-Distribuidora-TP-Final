@@ -1,16 +1,16 @@
-using Domain.Entities;
-using Domain.Enums;
+using Application.Models;
+using Application.Models.Request;
 
 namespace Application.Interfaces
 {
     public interface IOrderService
     {
-        Task<Order> GetOrderByIdAsync(int id, bool includesoftdeleted = false);
-        Task<List<Order>> GetAllOrdersAsync(bool includesoftdeleted = false);
-        Task<List<Order>> GetOrdersByClientIdAsync(int clientId);
-        Task<Order> CreateOrderAsync(Order order);
-        Task<bool> UpdateOrderStateAsync(int id, OrderStatus newState);
+        Task<OrderDTO> GetOrderByIdAsync(int id, bool includesoftdeleted = false);
+        Task<List<OrderDTO>> GetAllOrdersAsync(bool includesoftdeleted = false);
+        Task<List<OrderDTO>> GetOrdersByClientIdAsync(int clientId);
+        Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto);
+        Task<bool> UpdateOrderStateAsync(int id, UpdateOrderStateDTO orderdto);
         Task<bool> DeleteOrderAsync(int id, bool permanently = false);
-        Task<Order> RestoreOrderAsync(int id);
+        Task<OrderDTO> RestoreOrderAsync(int id);
     }
 }

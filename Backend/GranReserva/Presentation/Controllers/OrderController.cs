@@ -1,6 +1,6 @@
 using Application.Interfaces;
-using Domain.Entities;
-using Domain.Enums;
+using Application.Models;
+using Application.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -39,25 +39,28 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+        public async Task<IActionResult> CreateOrder([FromBody] CreationOrderDTO orderdto)
         {
-            var newOrder = await _orderService.CreateOrderAsync(order);
+            var newOrder = await _orderService.CreateOrderAsync(orderdto);
             return CreatedAtAction(nameof(GetOrderById), new { id = newOrder.Id }, newOrder);
         }
 
         [HttpPut("{id}/state")]
-        public async Task<IActionResult> UpdateOrderState(int id, [FromBody] OrderStatus newState)
+        public async Task<IActionResult> UpdateOrderState(int id, [FromBody] UpdateOrderStateDTO orderdto)
         {
-            var result = await _orderService.UpdateOrderStateAsync(id, newState);
+            var result = await _orderService.UpdateOrderStateAsync(id, orderdto);
             if (!result) return NotFound();
             return NoContent();
         }
 
-        [HttpPost("{id}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> RestoreOrder(int id)
         {
             var order = await _orderService.RestoreOrderAsync(id);
-            if (order == null) return NotFound();
+            if (order == null)
+            {
+                return NotFound("No se pudo restaurar la orden. Es posible que no exista o que ya esté activa.");
+            }
             return Ok(order);
         }
 
