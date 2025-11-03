@@ -48,7 +48,7 @@ namespace Presentation.Middleware
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
-
+            
             var result = JsonSerializer.Serialize(new { error = message });
             return context.Response.WriteAsync(result);
         }

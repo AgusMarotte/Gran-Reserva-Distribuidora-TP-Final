@@ -11,15 +11,6 @@ namespace Infrastructure.Repositories
         {
         }
 
-        private IQueryable<Order> GetActiveQuery()
-        {
-            return _dbSet
-                .Include(o => o.Client)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Product)
-                .Where(o => !o.IsDeleted);
-        }
-
         public override async Task<Order> GetByIdAsync(int id)
         {
             return await _dbSet
@@ -27,6 +18,15 @@ namespace Infrastructure.Repositories
                 .Include(o => o.OrderDetails)
                     .ThenInclude(od => od.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
+        }
+
+        private IQueryable<Order> GetActiveQuery()
+        {
+            return _dbSet
+                .Include(o => o.Client)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .Where(o => !o.IsDeleted);
         }
 
         public async Task<Order> GetActiveByIdAsync(int id)
