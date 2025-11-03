@@ -1,4 +1,6 @@
 using Application.Interfaces;
+using Application.Models;
+using Application.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -15,24 +17,22 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRewards()
+        public async Task<IActionResult> GetAllRewards([FromQuery] bool includesoftdeleted = false)
         {
-            var rewards = await _rewardService.GetAllRewardsAsync();
+            var rewards = await _rewardService.GetAllRewardsAsync(includesoftdeleted);
             return Ok(rewards);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetRewardById(int id)
+        public async Task<IActionResult> GetRewardById(int id, [FromQuery] bool includesoftdeleted = false)
         {
-            var reward = await _rewardService.GetRewardByIdAsync(id);
+            var reward = await _rewardService.GetRewardByIdAsync(id, includesoftdeleted);
             if (reward == null)
             {
                 return NotFound();
             }
             return Ok(reward);
         }
-<<<<<<< Updated upstream
-=======
 
         [HttpPost]
         public async Task<IActionResult> CreateReward([FromBody] CreationRewardDTO rewarddto)
@@ -81,6 +81,5 @@ namespace Presentation.Controllers
             }
             return NoContent();
         }
->>>>>>> Stashed changes
     }
 }
