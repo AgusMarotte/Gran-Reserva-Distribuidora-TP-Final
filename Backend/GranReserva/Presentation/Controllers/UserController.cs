@@ -71,7 +71,7 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/restore")]
+        [HttpPatch("{id}/restore")]
         public async Task<IActionResult> RestoreUser(int id)
         {
             var user = await _userService.RestoreUserAsync(id);

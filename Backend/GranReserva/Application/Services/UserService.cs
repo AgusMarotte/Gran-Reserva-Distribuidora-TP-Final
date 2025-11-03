@@ -21,7 +21,7 @@ namespace Application.Services
             var user = includesoftdeleted
                 ? await _userRepository.GetByIdAsync(id)
                 : await _userRepository.GetActiveByIdAsync(id);
-            
+
             return UserDTO.Create(user);
         }
 
@@ -42,14 +42,15 @@ namespace Application.Services
 
         public async Task<UserDTO> CreateUserAsync(CreationUserDTO userdto)
         {
-            var userEntity = new User
+            var userEntity = new Client
             {
                 Name = userdto.Name,
                 LastName = userdto.LastName,
                 PhoneNumber = userdto.PhoneNumber,
                 Email = userdto.Email,
                 Password = userdto.Password,
-                Role = UserRole.User
+                Role = UserRole.User,
+                Points = 0
             };
 
             var newUser = await _userRepository.AddAsync(userEntity);
