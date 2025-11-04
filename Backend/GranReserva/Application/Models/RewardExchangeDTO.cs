@@ -1,0 +1,36 @@
+using Domain.Entities;
+
+namespace Application.Models
+{
+    public class RewardExchangeDTO
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public int PointsUsed { get; set; }
+        public int ClientId { get; set; }
+        public string ClientName { get; set; }
+        public int RewardId { get; set; }
+        public string RewardName { get; set; }
+
+        public static RewardExchangeDTO Create(RewardExchange exchange)
+        {
+            if (exchange == null) return null;
+
+            return new RewardExchangeDTO
+            {
+                Id = exchange.Id,
+                Date = exchange.Date,
+                PointsUsed = exchange.PointsUsed,
+                ClientId = exchange.ClientId,
+                ClientName = exchange.Client != null ? $"{exchange.Client.Name} {exchange.Client.LastName}" : "Cliente no encontrado",
+                RewardId = exchange.RewardId,
+                RewardName = exchange.Reward?.Name ?? "Recompensa no encontrada"
+            };
+        }
+
+        public static List<RewardExchangeDTO> CreateList(List<RewardExchange> exchangeList)
+        {
+            return exchangeList.Select(Create).ToList();
+        }
+    }
+}

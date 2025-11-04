@@ -1,4 +1,6 @@
 using Application.Interfaces;
+using Application.Models;
+using Application.Models.Request;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -21,41 +23,44 @@ namespace Application.Services
             _clientRepository = clientRepository;
         }
 
-        public async Task<RewardExchange> GetExchangeByIdAsync(int id, bool includesoftdeleted = false)
+        public async Task<RewardExchangeDTO> GetExchangeByIdAsync(int id, bool includesoftdeleted = false)
         {
             var exchange = includesoftdeleted
                 ? await _exchangeRepository.GetByIdAsync(id)
                 : await _exchangeRepository.GetActiveByIdAsync(id);
-            return exchange;
+            
+            return RewardExchangeDTO.Create(exchange);
         }
 
-        public async Task<List<RewardExchange>> GetAllExchangesAsync(bool includesoftdeleted = false)
+        public async Task<List<RewardExchangeDTO>> GetAllExchangesAsync(bool includesoftdeleted = false)
         {
             var exchanges = includesoftdeleted
                 ? await _exchangeRepository.GetAllAsync()
                 : await _exchangeRepository.GetActiveAllAsync();
-            return exchanges;
+            
+            return RewardExchangeDTO.CreateList(exchanges);
         }
 
-        public async Task<List<RewardExchange>> GetExchangesByClientIdAsync(int clientId)
+        public async Task<List<RewardExchangeDTO>> GetExchangesByClientIdAsync(int clientId)
         {
-            return await _exchangeRepository.GetActiveExchangesByClientIdAsync(clientId);
+            var exchanges = await _exchangeRepository.GetActiveExchangesByClientIdAsync(clientId);
+            return RewardExchangeDTO.CreateList(exchanges);
         }
 
-        public async Task<RewardExchange> CreateExchangeAsync(RewardExchange exchange)
+        public async Task<RewardExchangeDTO> CreateExchangeAsync(CreationRewardExchangeDTO exchangedto)
         {
             //Validar Cliente
-            var client = await _clientRepository.GetByIdAsync(exchange.ClientId);
+            var client = await _clientRepository.GetByIdAsync(exchangedto.ClientId);
             if (client == null || client.IsDeleted)
             {
                 throw new ValidationException("El cliente no existe o no está activo.");
             }
 
             //Validar Reward
-            var reward = await _rewardRepository.GetActiveByIdAsync(exchange.RewardId);
+            var reward = await _rewardRepository.GetActiveByIdAsync(exchangedto.RewardId);
             if (reward == null)
             {
-                throw new NotFoundException($"La recompensa con ID {exchange.RewardId} no existe o no está activa.");
+                throw new NotFoundException($"La recompensa con ID {exchangedto.RewardId} no existe o no está activa.");
             }
 
             //Validar Stock
@@ -77,11 +82,20 @@ namespace Application.Services
             await _clientRepository.UpdateAsync(client);
             await _rewardRepository.UpdateAsync(reward);
 
-            //Crear el canje
-            exchange.PointsUsed = reward.PointsRequired;
-            exchange.Date = DateTime.UtcNow;
+            //Crear la entidad de canje
+            var exchangeEntity = new RewardExchange
+            {
+                ClientId = exchangedto.ClientId,
+                RewardId = exchangedto.RewardId,
+                PointsUsed = reward.PointsRequired,
+                Date = DateTime.UtcNow
+            };
 
-            return await _exchangeRepository.AddAsync(exchange);
+            var createdExchange = await _exchangeRepository.AddAsync(exchangeEntity);
+
+            //Obtener la entidad completa y mapear a DTO
+            var fullExchange = await _exchangeRepository.GetActiveByIdAsync(createdExchange.Id);
+            return RewardExchangeDTO.Create(fullExchange);
         }
 
         public async Task<bool> DeleteExchangeAsync(int id, bool permanently = false)
@@ -102,15 +116,16 @@ namespace Application.Services
             }
         }
 
-        public async Task<RewardExchange> RestoreExchangeAsync(int id)
+        public async Task<RewardExchangeDTO> RestoreExchangeAsync(int id)
         {
             var exchange = await _exchangeRepository.GetByIdAsync(id);
             if (exchange == null || exchange.IsDeleted == false)
             {
                 return null;
             }
+
             await _exchangeRepository.RestoreAsync(exchange);
-            return exchange;
+            return RewardExchangeDTO.Create(exchange);
         }
     }
 }

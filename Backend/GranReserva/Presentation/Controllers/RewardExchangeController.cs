@@ -1,5 +1,5 @@
 using Application.Interfaces;
-using Domain.Entities;
+using Application.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -38,9 +38,9 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateExchange([FromBody] RewardExchange exchange)
+        public async Task<IActionResult> CreateExchange([FromBody] CreationRewardExchangeDTO exchangedto)
         {
-            var newExchange = await _exchangeService.CreateExchangeAsync(exchange);
+            var newExchange = await _exchangeService.CreateExchangeAsync(exchangedto);
             return CreatedAtAction(nameof(GetExchangeById), new { id = newExchange.Id }, newExchange);
         }
 
@@ -48,7 +48,10 @@ namespace Presentation.Controllers
         public async Task<IActionResult> RestoreExchange(int id)
         {
             var exchange = await _exchangeService.RestoreExchangeAsync(id);
-            if (exchange == null) return NotFound();
+            if (exchange == null)
+            {
+                 return NotFound("No se pudo restaurar el canje. Es posible que no exista o que ya esté activo.");
+            }
             return Ok(exchange);
         }
 

@@ -1,14 +1,15 @@
-using Domain.Entities;
+using Application.Models;
+using Application.Models.Request;
 
 namespace Application.Interfaces
 {
     public interface IRewardExchangeService
     {
-        Task<RewardExchange> GetExchangeByIdAsync(int id, bool includesoftdeleted = false);
-        Task<List<RewardExchange>> GetAllExchangesAsync(bool includesoftdeleted = false);
-        Task<List<RewardExchange>> GetExchangesByClientIdAsync(int clientId);
-        Task<RewardExchange> CreateExchangeAsync(RewardExchange exchange);
+        Task<RewardExchangeDTO> GetExchangeByIdAsync(int id, bool includesoftdeleted = false);
+        Task<List<RewardExchangeDTO>> GetAllExchangesAsync(bool includesoftdeleted = false);
+        Task<List<RewardExchangeDTO>> GetExchangesByClientIdAsync(int clientId);
+        Task<RewardExchangeDTO> CreateExchangeAsync(CreationRewardExchangeDTO exchangedto);
         Task<bool> DeleteExchangeAsync(int id, bool permanently = false);
-        Task<RewardExchange> RestoreExchangeAsync(int id);
+        Task<RewardExchangeDTO> RestoreExchangeAsync(int id);
     }
 }
