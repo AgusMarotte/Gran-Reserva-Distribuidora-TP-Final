@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Request;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -33,7 +34,7 @@ namespace Presentation.Controllers
             }
             return Ok(user);
         }
-        
+
         [HttpGet("search")]
         public async Task<IActionResult> GetUserByNameAndLastName([FromQuery] string name, [FromQuery] string lastName)
         {
@@ -91,6 +92,24 @@ namespace Presentation.Controllers
                 return NotFound("Usuario no encontrado.");
             }
             return NoContent();
+        }
+
+        [HttpPatch("{id}/points")]
+        public async Task<IActionResult> UpdatePoints(int id, [FromBody] UpdatePointsDTO dto)
+        {
+            if (dto == null)
+            {
+                return BadRequest("Datos inválidos.");
+            }
+
+            var updatedUser = await _userService.UpdateClientPointsAsync(id, dto);
+
+            if (updatedUser == null)
+            {
+                throw new NotFoundException($"Usuario con id {id} no encontrado o no está activo.");
+            }
+
+            return Ok(updatedUser);
         }
     }
 }

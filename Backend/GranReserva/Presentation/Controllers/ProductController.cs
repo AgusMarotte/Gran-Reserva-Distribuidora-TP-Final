@@ -16,10 +16,6 @@ namespace Presentation.Controllers
             _productService = productService;
         }
 
-        /// <summary>
-        /// Obtiene una lista de todos los productos.
-        /// </summary>
-        /// <param name="includesoftdeleted">Si es true, incluye los productos borrados lógicamente.</param>
         [HttpGet]
         public async Task<IActionResult> GetAllProducts([FromQuery] bool includesoftdeleted = false)
         {
@@ -33,8 +29,9 @@ namespace Presentation.Controllers
             var product = await _productService.GetProductByIdAsync(id, includesoftdeleted);
             if (product == null)
             {
-                return NotFound();
+                return NotFound("Producto no encontrado.");
             }
+
             return Ok(product);
         }
 
@@ -54,6 +51,8 @@ namespace Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] UpdateProductDTO productdto)
         {
+
+
             if (productdto == null)
             {
                 return BadRequest("Datos del producto inválidos.");

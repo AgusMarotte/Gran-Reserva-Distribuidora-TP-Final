@@ -3,6 +3,7 @@ using Application.Models;
 using Application.Models.Request;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -103,6 +104,43 @@ namespace Application.Services
 
             await _userRepository.RestoreAsync(user);
             return UserDTO.Create(user);
+        }
+
+        public async Task<UserDTO> UpdateClientPointsAsync(int clientId, UpdatePointsDTO dto)
+        {
+            var user = await _userRepository.GetActiveByIdAsync(clientId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            if (user is not Client client)
+            {
+                throw new ValidationException($"El usuario con id {clientId} no es un Cliente, no se pueden modificar puntos.");
+            }
+
+            switch (dto.Operation)
+            {
+                case PointOperationType.Add:
+                    client.Points += dto.Amount;
+                    break;
+
+                case PointOperationType.Subtract:
+                    if (client.Points < dto.Amount)
+                    {
+                        throw new ValidationException($"El cliente solo tiene {client.Points} puntos. No se pueden descontar {dto.Amount}.");
+                    }
+                    client.Points -= dto.Amount;
+                    break;
+
+                case PointOperationType.Set:
+                    client.Points = dto.Amount;
+                    break;
+            }
+
+            await _userRepository.UpdateAsync(client);
+
+            return UserDTO.Create(client);
         }
     }
 }
