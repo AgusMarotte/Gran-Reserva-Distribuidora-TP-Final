@@ -24,12 +24,35 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
         }
 
-        public async Task<User> GetByNameAndLastNameAsync(string name, string lastName)
+        public async Task<List<User>> GetUsersByNameOrLastNameAsync(string? name, string? lastName)
         {
-            return await _dbSet
-                .FirstOrDefaultAsync(u => u.Name == name && u.LastName == lastName && !u.IsDeleted);
+            var query = _dbSet.Where(u => !u.IsDeleted);
+
+            bool hasName = !string.IsNullOrEmpty(name);
+            bool hasLastName = !string.IsNullOrEmpty(lastName);
+
+            if (hasName && hasLastName)
+            {
+                string lowerName = name.ToLower();
+                string lowerLastName = lastName.ToLower();
+                query = query.Where(u =>
+                    u.Name.ToLower().Contains(lowerName) &&
+                    u.LastName.ToLower().Contains(lowerLastName));
+            }
+            else if (hasName)
+            {
+                string lowerName = name.ToLower();
+                query = query.Where(u => u.Name.ToLower().Contains(lowerName));
+            }
+            else if (hasLastName)
+            {
+                string lowerLastName = lastName.ToLower();
+                query = query.Where(u => u.LastName.ToLower().Contains(lowerLastName));
+            }
+
+            return await query.ToListAsync();
         }
-        
+
         public async Task DeleteSoftAsync(User user)
         {
             user.IsDeleted = true;

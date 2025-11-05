@@ -35,10 +35,10 @@ namespace Application.Services
             return UserDTO.CreateList(users);
         }
 
-        public async Task<UserDTO> GetUserByNameAndLastNameAsync(string name, string lastName)
+        public async Task<List<UserDTO>> GetUsersByNameOrLastNameAsync(string? name, string? lastName)
         {
-            var user = await _userRepository.GetByNameAndLastNameAsync(name, lastName);
-            return UserDTO.Create(user);
+            var users = await _userRepository.GetUsersByNameOrLastNameAsync(name, lastName);
+            return UserDTO.CreateList(users);
         }
 
         public async Task<UserDTO> CreateUserAsync(CreationUserDTO userdto)

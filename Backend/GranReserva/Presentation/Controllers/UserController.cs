@@ -36,14 +36,10 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> GetUserByNameAndLastName([FromQuery] string name, [FromQuery] string lastName)
+        public async Task<IActionResult> GetUsersByNameOrLastName([FromQuery] string? name, [FromQuery] string? lastName)
         {
-            var user = await _userService.GetUserByNameAndLastNameAsync(name, lastName);
-            if (user == null)
-            {
-                return NotFound("Usuario no encontrado.");
-            }
-            return Ok(user);
+            var users = await _userService.GetUsersByNameOrLastNameAsync(name, lastName);
+            return Ok(users);
         }
 
         [HttpPost]
