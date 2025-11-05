@@ -15,7 +15,7 @@ namespace Application.Models.Request.UserDTO
         public PointOperationType Operation { get; set; }
 
         [Required(ErrorMessage = "La cantidad de puntos es obligatoria.")]
-        [Range(0, int.MaxValue, ErrorMessage = "La cantidad debe ser un valor positivo.")]
-        public int Amount { get; set; }
+        [Range(0, long.MaxValue, ErrorMessage = "La cantidad debe ser un valor positivo.")]
+        public long Amount { get; set; }
     }
 }

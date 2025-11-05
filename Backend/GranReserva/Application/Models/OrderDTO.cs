@@ -10,10 +10,10 @@ namespace Application.Models
         public int Total { get; set; }
         public OrderStatus State { get; set; }
         public int ClientId { get; set; }
-        public string ClientName { get; set; }
-        public List<OrderDetailDTO> OrderDetails { get; set; }
+        public string ClientName { get; set; } = string.Empty;
+        public List<OrderDetailDTO> OrderDetails { get; set; } = new List<OrderDetailDTO>();
 
-        public static OrderDTO Create(Order order)
+        public static OrderDTO? Create(Order order)
         {
             if (order == null) return null;
 
@@ -25,13 +25,13 @@ namespace Application.Models
                 State = order.State,
                 ClientId = order.ClientId,
                 ClientName = order.Client != null ? $"{order.Client.Name} {order.Client.LastName}" : "Cliente no encontrado",
-                OrderDetails = order.OrderDetails?.Select(OrderDetailDTO.Create).ToList() ?? new List<OrderDetailDTO>()
+                OrderDetails = order.OrderDetails?.Select(OrderDetailDTO.Create).OfType<OrderDetailDTO>().ToList() ?? new List<OrderDetailDTO>()
             };
         }
 
         public static List<OrderDTO> CreateList(List<Order> orderList)
         {
-            return orderList.Select(Create).ToList();
+            return orderList.Select(Create).OfType<OrderDTO>().ToList();
         }
     }
 }

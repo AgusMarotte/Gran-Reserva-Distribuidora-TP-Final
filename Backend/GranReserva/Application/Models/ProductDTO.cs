@@ -6,13 +6,13 @@ namespace Application.Models
     public class ProductDTO
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public ProductType Type { get; set; }
         public int Price { get; set; }
         public int Stock { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
 
-        public static ProductDTO Create(Product product)
+        public static ProductDTO? Create(Product product)
         {
             if (product == null)
             {
@@ -32,12 +32,7 @@ namespace Application.Models
 
         public static List<ProductDTO> CreateList(List<Product> productList)
         {
-            var dtoList = new List<ProductDTO>();
-            foreach (var p in productList)
-            {
-                dtoList.Add(Create(p));
-            }
-            return dtoList;
+            return productList.Select(Create).OfType<ProductDTO>().ToList();
         }
     }
 }

@@ -7,21 +7,21 @@ namespace Application.Models.Request.UserDTO
     {
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El apellido es obligatorio.")]
         [StringLength(100)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
-        [RegularExpression("^[0-9]+$", ErrorMessage = "El número de teléfono solo puede contener dígitos.")]
-        public string PhoneNumber { get; set; }
+        [RegularExpression("^[0-9]{10}$", ErrorMessage = "El número de teléfono debe tener 10 dígitos.")]
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El email es obligatorio.")]
         [EmailAddress(ErrorMessage = "El formato del email no es válido.")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
         [MinLength(8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres.")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }

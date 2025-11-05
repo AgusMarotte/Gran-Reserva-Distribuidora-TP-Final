@@ -6,15 +6,16 @@ namespace Application.Models
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public int PointsUsed { get; set; }
+        public long PointsUsed { get; set; }
         public int ClientId { get; set; }
-        public string ClientName { get; set; }
+        public string ClientName { get; set; } = string.Empty;
         public int RewardId { get; set; }
-        public string RewardName { get; set; }
+        public string RewardName { get; set; } = string.Empty;
 
-        public static RewardExchangeDTO Create(RewardExchange exchange)
+        public static RewardExchangeDTO? Create(RewardExchange exchange)
         {
             if (exchange == null) return null;
+
 
             return new RewardExchangeDTO
             {
@@ -30,7 +31,7 @@ namespace Application.Models
 
         public static List<RewardExchangeDTO> CreateList(List<RewardExchange> exchangeList)
         {
-            return exchangeList.Select(Create).ToList();
+            return exchangeList.Select(Create).OfType<RewardExchangeDTO>().ToList();
         }
     }
 }

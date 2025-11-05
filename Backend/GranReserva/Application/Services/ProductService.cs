@@ -15,7 +15,7 @@ namespace Application.Services
             _productRepository = productRepository;
         }
 
-        public async Task<ProductDTO> GetProductByIdAsync(int id, bool includesoftdeleted = false)
+        public async Task<ProductDTO?> GetProductByIdAsync(int id, bool includesoftdeleted = false)
         {
             var product = includesoftdeleted
                 ? await _productRepository.GetByIdAsync(id)
@@ -45,7 +45,7 @@ namespace Application.Services
             };
 
             var newProduct = await _productRepository.AddAsync(productEntity);
-            return ProductDTO.Create(newProduct);
+            return ProductDTO.Create(newProduct)!;
         }
 
         public async Task<bool> UpdateProductAsync(int id, UpdateProductDTO productdto)
@@ -66,7 +66,7 @@ namespace Application.Services
             return true;
         }
 
-        public async Task<ProductDTO> PartialUpdateProductAsync(int id, ProductStockAndPriceDTO productdto)
+        public async Task<ProductDTO?> PartialUpdateProductAsync(int id, ProductStockAndPriceDTO productdto)
         {
             var existingProduct = await _productRepository.GetActiveByIdAsync(id);
             if (existingProduct == null)
@@ -76,12 +76,12 @@ namespace Application.Services
 
             if (productdto.Price.HasValue)
             {
-                existingProduct.Price = productdto.Price.Value;
+                existingProduct.Price = (int)productdto.Price.Value;
             }
 
             if (productdto.Stock.HasValue)
             {
-                existingProduct.Stock = productdto.Stock.Value;
+                existingProduct.Stock = (int)productdto.Stock.Value;
             }
 
             await _productRepository.UpdateAsync(existingProduct);
@@ -112,7 +112,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<ProductDTO> RestoreProductAsync(int id)
+        public async Task<ProductDTO?> RestoreProductAsync(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
 

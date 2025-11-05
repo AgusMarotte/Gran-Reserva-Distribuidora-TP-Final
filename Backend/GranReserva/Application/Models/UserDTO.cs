@@ -6,14 +6,14 @@ namespace Application.Models
     public class UserDTO
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string LastName { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Email { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public UserRole Role { get; set; }
-        public int? Points { get; set; }
+        public long? Points { get; set; }
 
-        public static UserDTO Create(User user)
+        public static UserDTO? Create(User user)
         {
             if (user == null)
             {
@@ -38,12 +38,7 @@ namespace Application.Models
 
         public static List<UserDTO> CreateList(List<User> userList)
         {
-            var dtoList = new List<UserDTO>();
-            foreach (var u in userList)
-            {
-                dtoList.Add(Create(u));
-            }
-            return dtoList;
+            return userList.Select(Create).OfType<UserDTO>().ToList();
         }
     }
 }

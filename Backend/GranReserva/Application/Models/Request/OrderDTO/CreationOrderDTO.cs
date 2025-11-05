@@ -9,7 +9,7 @@ namespace Application.Models.Request.OrderDTO
 
         [Required]
         [MinLength(1, ErrorMessage = "La orden debe tener al menos un item.")]
-        public List<CreationOrderDetailDTO> Items { get; set; }
+        public List<CreationOrderDetailDTO> Items { get; set; } = new List<CreationOrderDetailDTO>();
     }
 
     public class CreationOrderDetailDTO
