@@ -1,6 +1,5 @@
 using Application.Interfaces;
-using Application.Models;
-using Application.Models.Request;
+using Application.Models.Request.UserDTO;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 

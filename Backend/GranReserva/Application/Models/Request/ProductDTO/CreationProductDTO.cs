@@ -1,9 +1,9 @@
 ﻿using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Models.Request
+namespace Application.Models.Request.ProductDTO
 {
-    public class UpdateProductDTO
+    public class CreationProductDTO
     {
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "El nombre debe tener entre 3 y 100 caracteres.")]

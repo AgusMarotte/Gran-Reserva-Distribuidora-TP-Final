@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Models;
 using Application.Models.Request;
+using Application.Models.Request.RewardDTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -58,6 +59,24 @@ namespace Presentation.Controllers
                 return NotFound("Recompensa no encontrada.");
             }
             return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateReward(int id, [FromBody] RewardStockAndPointsDTO rewardstockandpointsdto)
+        {
+            if (rewardstockandpointsdto == null)
+            {
+                return BadRequest("Datos inválidos.");
+            }
+
+            var updatedReward = await _rewardService.PartialUpdateRewardAsync(id, rewardstockandpointsdto);
+
+            if (updatedReward == null)
+            {
+                return NotFound("Recompensa no encontrada.");
+            }
+
+            return Ok(updatedReward);
         }
 
         [HttpPatch("{id}/restore")]

@@ -1,6 +1,6 @@
 ﻿using Application.Interfaces;
 using Application.Models;
-using Application.Models.Request;
+using Application.Models.Request.ProductDTO;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -64,6 +64,28 @@ namespace Application.Services
 
             await _productRepository.UpdateAsync(existingProduct);
             return true;
+        }
+
+        public async Task<ProductDTO> PartialUpdateProductAsync(int id, ProductStockAndPriceDTO productdto)
+        {
+            var existingProduct = await _productRepository.GetActiveByIdAsync(id);
+            if (existingProduct == null)
+            {
+                return null;
+            }
+
+            if (productdto.Price.HasValue)
+            {
+                existingProduct.Price = productdto.Price.Value;
+            }
+
+            if (productdto.Stock.HasValue)
+            {
+                existingProduct.Stock = productdto.Stock.Value;
+            }
+
+            await _productRepository.UpdateAsync(existingProduct);
+            return ProductDTO.Create(existingProduct);
         }
 
         public async Task<bool> DeleteProductAsync(int id, bool permanently = false)
