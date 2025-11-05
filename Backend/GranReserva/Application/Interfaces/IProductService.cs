@@ -1,5 +1,5 @@
 ﻿using Application.Models;
-using Application.Models.Request;
+using Application.Models.Request.ProductDTO;
 
 namespace Application.Interfaces
 {
@@ -9,6 +9,7 @@ namespace Application.Interfaces
         Task<List<ProductDTO>> GetAllProductsAsync(bool includesoftdeleted = false);
         Task<ProductDTO> CreateProductAsync(CreationProductDTO productdto);
         Task<bool> UpdateProductAsync(int id, UpdateProductDTO productdto);
+        Task<ProductDTO> PartialUpdateProductAsync(int id, ProductStockAndPriceDTO productdto);
         Task<bool> DeleteProductAsync(int id, bool permanently = false);
         Task<ProductDTO> RestoreProductAsync(int id);
     }

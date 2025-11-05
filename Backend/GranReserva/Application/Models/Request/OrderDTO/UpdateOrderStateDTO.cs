@@ -1,7 +1,7 @@
 using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Models.Request
+namespace Application.Models.Request.OrderDTO
 {
     public class UpdateOrderStateDTO
     {

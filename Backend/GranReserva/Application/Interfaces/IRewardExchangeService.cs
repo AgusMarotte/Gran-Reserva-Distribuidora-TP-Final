@@ -1,5 +1,5 @@
 using Application.Models;
-using Application.Models.Request;
+using Application.Models.Request.RewardExchangeDTO;
 
 namespace Application.Interfaces
 {

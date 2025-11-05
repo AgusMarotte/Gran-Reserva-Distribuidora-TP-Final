@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Application.Models.Request;
+using Application.Models.Request.ProductDTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -66,6 +67,24 @@ namespace Presentation.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PartialUpdateProduct(int id, [FromBody] ProductStockAndPriceDTO productstockandpricedto)
+        {
+            if (productstockandpricedto == null)
+            {
+                return BadRequest("Datos inválidos.");
+            }
+
+            var updatedProduct = await _productService.PartialUpdateProductAsync(id, productstockandpricedto);
+
+            if (updatedProduct == null)
+            {
+                return NotFound("Producto no encontrado.");
+            }
+
+            return Ok(updatedProduct);
         }
 
         [HttpDelete("{id}")]

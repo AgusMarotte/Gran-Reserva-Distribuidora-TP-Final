@@ -1,6 +1,6 @@
 using Application.Interfaces;
 using Application.Models;
-using Application.Models.Request;
+using Application.Models.Request.OrderDTO;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;

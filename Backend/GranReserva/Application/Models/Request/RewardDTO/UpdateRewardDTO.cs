@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Models.Request
+namespace Application.Models.Request.RewardDTO
 {
     public class UpdateRewardDTO
     {

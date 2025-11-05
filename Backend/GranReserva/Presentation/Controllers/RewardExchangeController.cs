@@ -1,5 +1,5 @@
 using Application.Interfaces;
-using Application.Models.Request;
+using Application.Models.Request.RewardExchangeDTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers

@@ -1,6 +1,6 @@
 using Application.Interfaces;
 using Application.Models;
-using Application.Models.Request;
+using Application.Models.Request.RewardDTO;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -20,7 +20,7 @@ namespace Application.Services
             var reward = includesoftdeleted
                 ? await _rewardRepository.GetByIdAsync(id)
                 : await _rewardRepository.GetActiveByIdAsync(id);
-            
+
             return RewardDTO.Create(reward);
         }
 
@@ -64,6 +64,28 @@ namespace Application.Services
 
             await _rewardRepository.UpdateAsync(existingReward);
             return true;
+        }
+
+        public async Task<RewardDTO> PartialUpdateRewardAsync(int id, RewardStockAndPointsDTO rewarddto)
+        {
+            var existingReward = await _rewardRepository.GetActiveByIdAsync(id);
+            if (existingReward == null)
+            {
+                return null;
+            }
+
+            if (rewarddto.PointsRequired.HasValue)
+            {
+                existingReward.PointsRequired = rewarddto.PointsRequired.Value;
+            }
+
+            if (rewarddto.Stock.HasValue)
+            {
+                existingReward.Stock = rewarddto.Stock.Value;
+            }
+
+            await _rewardRepository.UpdateAsync(existingReward);
+            return RewardDTO.Create(existingReward);
         }
 
         public async Task<bool> DeleteRewardAsync(int id, bool permanently = false)
