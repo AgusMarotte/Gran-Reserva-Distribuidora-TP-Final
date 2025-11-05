@@ -3,6 +3,7 @@ using Application.Services;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Presentation.Middleware;
 using System.Text.Json.Serialization;
@@ -45,6 +46,14 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IRewardExchangeService, RewardExchangeService>();
 builder.Services.AddScoped<IRewardExchangeRepository, RewardExchangeRepository>();
+
+
+builder.Services.AddHttpClient("jokesHttpClient", client =>
+{
+    client.BaseAddress = new Uri("https://official-joke-api.appspot.com/");
+});
+builder.Services.AddScoped<IJokeService, JokeService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
