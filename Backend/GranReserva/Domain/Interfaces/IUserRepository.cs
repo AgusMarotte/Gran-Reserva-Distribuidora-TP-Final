@@ -9,5 +9,6 @@ namespace Domain.Interfaces
         Task DeleteSoftAsync(User user);
         Task RestoreAsync(User user);
         Task<List<User>> GetUsersByNameOrLastNameAsync(string? name, string? lastName);
+        Task<User> GetActiveByEmailAsync(string email);
     }
 }

@@ -43,6 +43,12 @@ namespace Application.Services
 
         public async Task<UserDTO> CreateUserAsync(CreationUserDTO userdto)
         {
+            var existingUser = await _userRepository.GetActiveByEmailAsync(userdto.Email);
+            if (existingUser != null)
+            {
+                throw new ValidationException("El email ya está en uso.");
+            }
+
             var userEntity = new Client
             {
                 Name = userdto.Name,

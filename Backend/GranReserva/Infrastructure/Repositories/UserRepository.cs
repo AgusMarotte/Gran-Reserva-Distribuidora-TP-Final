@@ -53,6 +53,12 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<User> GetActiveByEmailAsync(string email)
+        {
+            return await _dbSet
+                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+        }
+
         public async Task DeleteSoftAsync(User user)
         {
             user.IsDeleted = true;
