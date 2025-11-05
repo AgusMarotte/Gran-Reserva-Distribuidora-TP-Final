@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Domain.Interfaces;
+using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -48,12 +49,18 @@ builder.Services.AddScoped<IRewardExchangeService, RewardExchangeService>();
 builder.Services.AddScoped<IRewardExchangeRepository, RewardExchangeRepository>();
 
 
+
+var jokesApiConfig = new ApiClientConfiguration();
+builder.Configuration.GetSection("JokesApiConfig").Bind(jokesApiConfig);
+
 builder.Services.AddHttpClient("jokesHttpClient", client =>
 {
     client.BaseAddress = new Uri("https://official-joke-api.appspot.com/");
-});
-builder.Services.AddScoped<IJokeService, JokeService>();
+})
+.AddPolicyHandler(PollyResiliencePolicies.GetRetryPolicy(jokesApiConfig))
+.AddPolicyHandler(PollyResiliencePolicies.GetCircuitBreakerPolicy(jokesApiConfig));
 
+builder.Services.AddScoped<IJokeService, JokeService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
