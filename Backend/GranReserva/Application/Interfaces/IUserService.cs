@@ -1,5 +1,6 @@
 using Application.Models;
 using Application.Models.Request.UserDTO;
+using Domain.Enums;
 
 namespace Application.Interfaces
 {
@@ -9,6 +10,7 @@ namespace Application.Interfaces
         Task<List<UserDTO>> GetAllUsersAsync(bool includesoftdeleted = false);
         Task<List<UserDTO>> GetUsersByNameOrLastNameAsync(string? name, string? lastName);
         Task<UserDTO> CreateUserAsync(CreationUserDTO userdto);
+        Task<UserDTO> CreateAdminAsync(CreationUserDTO userdto, UserRole role);
         Task<bool> UpdateUserAsync(int id, UpdateUserDTO userdto);
         Task<bool> DeleteUserAsync(int id, bool permanently = false);
         Task<UserDTO> RestoreUserAsync(int id);

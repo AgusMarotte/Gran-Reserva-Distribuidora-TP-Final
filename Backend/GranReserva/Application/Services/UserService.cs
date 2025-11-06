@@ -49,20 +49,67 @@ namespace Application.Services
                 throw new ValidationException("El email ya está en uso.");
             }
 
-            var userEntity = new Client
+            bool anyUserExists = await _userRepository.AnyUserExistsAsync();
+
+            User newUser;
+
+            if (anyUserExists)
+            {
+                newUser = new Client
+                {
+                    Name = userdto.Name,
+                    LastName = userdto.LastName,
+                    PhoneNumber = userdto.PhoneNumber,
+                    Email = userdto.Email,
+                    Password = userdto.Password,
+                    Role = UserRole.User,
+                    Points = 0
+                };
+            }
+            else
+            {
+                newUser = new User
+                {
+                    Name = userdto.Name,
+                    LastName = userdto.LastName,
+                    PhoneNumber = userdto.PhoneNumber,
+                    Email = userdto.Email,
+                    Password = userdto.Password,
+                    Role = UserRole.SuperAdmin
+                };
+            }
+
+            var createdUser = await _userRepository.AddAsync(newUser);
+            return UserDTO.Create(createdUser)!;
+        }
+
+        public async Task<UserDTO> CreateAdminAsync(CreationUserDTO userdto, UserRole role)
+        {
+            if (role != UserRole.Admin && role != UserRole.SuperAdmin)
+            {
+                throw new ValidationException("Rol inválido para creación de administrador.");
+            }
+
+            var existingUser = await _userRepository.GetActiveByEmailAsync(userdto.Email);
+            if (existingUser != null)
+            {
+                throw new ValidationException("El email ya está en uso.");
+            }
+
+            var userEntity = new User
             {
                 Name = userdto.Name,
                 LastName = userdto.LastName,
                 PhoneNumber = userdto.PhoneNumber,
                 Email = userdto.Email,
                 Password = userdto.Password,
-                Role = UserRole.User,
-                Points = 0
+                Role = role,
             };
 
             var newUser = await _userRepository.AddAsync(userEntity);
             return UserDTO.Create(newUser);
         }
+
 
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDTO userdto)
         {

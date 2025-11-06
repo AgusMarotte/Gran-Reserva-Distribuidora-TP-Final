@@ -1,5 +1,7 @@
 using Application.Interfaces;
+using Application.Models.Request;
 using Application.Models.Request.UserDTO;
+using Domain.Enums;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +51,24 @@ namespace Presentation.Controllers
                 return BadRequest();
             }
             var newUser = await _userService.CreateUserAsync(userdto);
+            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
+        }
+
+        [HttpPost("admin")]
+        public async Task<IActionResult> CreateAdmin([FromBody] CreationUserDTO userdto, [FromQuery] AdminCreationRole role = AdminCreationRole.Admin)
+        {
+            if (userdto == null)
+            {
+                return BadRequest();
+            }
+
+            UserRole domainRole = role switch
+            {
+                AdminCreationRole.SuperAdmin => UserRole.SuperAdmin,
+                AdminCreationRole.Admin => UserRole.Admin
+            };
+
+            var newUser = await _userService.CreateAdminAsync(userdto, domainRole);
             return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
         }
 

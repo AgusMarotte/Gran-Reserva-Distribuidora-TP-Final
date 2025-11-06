@@ -12,12 +12,14 @@ namespace Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly IUserRepository _userRepository;
 
-        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IClientRepository clientRepository)
+        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IClientRepository clientRepository, IUserRepository userRepository)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _clientRepository = clientRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<OrderDTO> GetOrderByIdAsync(int id, bool includesoftdeleted = false)
@@ -47,9 +49,20 @@ namespace Application.Services
         public async Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto)
         {
             var client = await _clientRepository.GetByIdAsync(orderdto.ClientId);
-            if (client == null || client.IsDeleted)
+            if (client == null)
             {
-                throw new ValidationException("El cliente no existe o no está activo.");
+                var user = await _userRepository.GetActiveByIdAsync(orderdto.ClientId);
+                if (user != null)
+                {
+                    throw new ValidationException($"El usuario con ID {orderdto.ClientId} es un '{user.Role}' y no puede crear órdenes.");
+                }
+
+                throw new NotFoundException($"No se encontró ningún cliente con ID {orderdto.ClientId}.");
+            }
+
+            if (client.IsDeleted)
+            {
+                throw new ValidationException("El cliente no está activo.");
             }
 
             var newOrder = new Order

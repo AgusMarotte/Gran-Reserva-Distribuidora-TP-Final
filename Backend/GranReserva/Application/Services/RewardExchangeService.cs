@@ -12,15 +12,18 @@ namespace Application.Services
         private readonly IRewardExchangeRepository _exchangeRepository;
         private readonly IRewardRepository _rewardRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly IUserRepository _userRepository;
 
         public RewardExchangeService(
             IRewardExchangeRepository exchangeRepository, 
             IRewardRepository rewardRepository, 
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            IUserRepository userRepository)
         {
             _exchangeRepository = exchangeRepository;
             _rewardRepository = rewardRepository;
             _clientRepository = clientRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<RewardExchangeDTO> GetExchangeByIdAsync(int id, bool includesoftdeleted = false)
@@ -51,9 +54,20 @@ namespace Application.Services
         {
             //Validar Cliente
             var client = await _clientRepository.GetByIdAsync(exchangedto.ClientId);
-            if (client == null || client.IsDeleted)
+
+            if (client == null)
             {
-                throw new ValidationException("El cliente no existe o no está activo.");
+                var user = await _userRepository.GetActiveByIdAsync(exchangedto.ClientId);
+                if (user != null)
+                {
+                    throw new ValidationException($"El usuario con ID {exchangedto.ClientId} es un '{user.Role}' y no puede realizar canjes.");
+                }
+                throw new NotFoundException($"No se encontró ningún cliente con ID {exchangedto.ClientId}.");
+            }
+
+            if (client.IsDeleted)
+            {
+                throw new ValidationException("El cliente no está activo.");
             }
 
             //Validar Reward

@@ -10,5 +10,6 @@ namespace Domain.Interfaces
         Task RestoreAsync(User user);
         Task<List<User>> GetUsersByNameOrLastNameAsync(string? name, string? lastName);
         Task<User> GetActiveByEmailAsync(string email);
+        Task<bool> AnyUserExistsAsync();
     }
 }

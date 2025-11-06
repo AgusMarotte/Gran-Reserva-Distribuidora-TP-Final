@@ -59,6 +59,11 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
         }
 
+        public async Task<bool> AnyUserExistsAsync()
+        {
+            return await _dbSet.AnyAsync();
+        }
+
         public async Task DeleteSoftAsync(User user)
         {
             user.IsDeleted = true;
