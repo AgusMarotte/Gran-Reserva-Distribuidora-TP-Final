@@ -23,7 +23,15 @@ namespace Infrastructure.Repositories
             return await _dbSet
                 .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
         }
-        
+
+        public async Task<List<Reward>> GetActiveByNameAsync(string name)
+        {
+            var nameLower = name.ToLower();
+            return await _dbSet
+                .Where(r => !r.IsDeleted && r.Name.ToLower().Contains(nameLower))
+                .ToListAsync();
+        }
+
         public async Task DeleteSoftAsync(Reward reward)
         {
             reward.IsDeleted = true;

@@ -1,5 +1,6 @@
 ﻿using Application.Models;
 using Application.Models.Request.ProductDTO;
+using Domain.Enums;
 
 namespace Application.Interfaces
 {
@@ -7,6 +8,8 @@ namespace Application.Interfaces
     {
         Task<ProductDTO?> GetProductByIdAsync(int id, bool includesoftdeleted = false);
         Task<List<ProductDTO>> GetAllProductsAsync(bool includesoftdeleted = false);
+        Task<List<ProductDTO>> GetProductsByNameAsync(string name);
+        Task<List<ProductDTO>> GetProductsByTypeAsync(ProductType type);
         Task<ProductDTO> CreateProductAsync(CreationProductDTO productdto);
         Task<bool> UpdateProductAsync(int id, UpdateProductDTO productdto);
         Task<ProductDTO?> PartialUpdateProductAsync(int id, ProductStockAndPriceDTO productdto);

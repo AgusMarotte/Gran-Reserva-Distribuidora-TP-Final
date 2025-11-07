@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation.Middleware;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -117,6 +118,23 @@ builder.Services.AddAuthentication("Bearer")
             ValidAudience = builder.Configuration["Authentication:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SecretForKey"]!)),
             ClockSkew = TimeSpan.FromMinutes(5)
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var response = new
+                {
+                    error = "No estás autorizado. El token puede ser inválido o haber expirado."
+                };
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
         };
     });
 

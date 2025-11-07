@@ -6,6 +6,7 @@ namespace Domain.Interfaces
     {
         Task<Reward> GetActiveByIdAsync(int id);
         Task<List<Reward>> GetActiveAllAsync();
+        Task<List<Reward>> GetActiveByNameAsync(string name);
         Task DeleteSoftAsync(Reward reward);
         Task RestoreAsync(Reward reward);
     }

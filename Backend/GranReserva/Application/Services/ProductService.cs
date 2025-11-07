@@ -2,6 +2,7 @@
 using Application.Models;
 using Application.Models.Request.ProductDTO;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -30,6 +31,22 @@ namespace Application.Services
                 ? await _productRepository.GetAllAsync()
                 : await _productRepository.GetActiveAllAsync();
 
+            return ProductDTO.CreateList(products);
+        }
+
+        public async Task<List<ProductDTO>> GetProductsByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return new List<ProductDTO>();
+            }
+            var products = await _productRepository.GetActiveByNameAsync(name);
+            return ProductDTO.CreateList(products);
+        }
+
+        public async Task<List<ProductDTO>> GetProductsByTypeAsync(ProductType type)
+        {
+            var products = await _productRepository.GetActiveByTypeAsync(type);
             return ProductDTO.CreateList(products);
         }
 

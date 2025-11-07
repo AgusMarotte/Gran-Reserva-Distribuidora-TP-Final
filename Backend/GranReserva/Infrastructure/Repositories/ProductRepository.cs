@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,21 @@ namespace Infrastructure.Repositories
         {
             return await _dbSet
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
+        }
+
+        public async Task<List<Product>> GetActiveByNameAsync(string name)
+        {
+            var nameLower = name.ToLower();
+            return await _dbSet
+                .Where(p => !p.IsDeleted && p.Name.ToLower().Contains(nameLower))
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>> GetActiveByTypeAsync(ProductType type)
+        {
+            return await _dbSet
+                .Where(p => !p.IsDeleted && p.Type == type)
+                .ToListAsync();
         }
 
         public async Task DeleteSoftAsync(Product product)

@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
-using Application.Models;
-using Application.Models.Request;
 using Application.Models.Request.ProductDTO;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +34,25 @@ namespace Presentation.Controllers
             }
 
             return Ok(product);
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> GetProductsByName([FromQuery] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("El término de búsqueda no puede estar vacío.");
+            }
+            var products = await _productService.GetProductsByNameAsync(name);
+            return Ok(products);
+        }
+
+        [HttpGet("search-by-type")]
+        public async Task<IActionResult> GetProductsByType([FromQuery] ProductType type)
+        {
+
+            var products = await _productService.GetProductsByTypeAsync(type);
+            return Ok(products);
         }
 
         [HttpPost]

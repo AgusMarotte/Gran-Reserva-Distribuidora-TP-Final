@@ -33,6 +33,16 @@ namespace Application.Services
             return RewardDTO.CreateList(rewards);
         }
 
+        public async Task<List<RewardDTO>> GetRewardsByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return new List<RewardDTO>();
+            }
+            var rewards = await _rewardRepository.GetActiveByNameAsync(name);
+            return RewardDTO.CreateList(rewards);
+        }
+
         public async Task<RewardDTO> CreateRewardAsync(CreationRewardDTO rewarddto)
         {
             var rewardEntity = new Reward

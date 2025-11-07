@@ -1,6 +1,4 @@
 using Application.Interfaces;
-using Application.Models;
-using Application.Models.Request;
 using Application.Models.Request.RewardDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +32,17 @@ namespace Presentation.Controllers
                 return NotFound();
             }
             return Ok(reward);
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> GetRewardsByName([FromQuery] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("El término de búsqueda no puede estar vacío.");
+            }
+            var rewards = await _rewardService.GetRewardsByNameAsync(name);
+            return Ok(rewards);
         }
 
         [HttpPost]

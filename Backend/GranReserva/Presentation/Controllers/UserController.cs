@@ -78,6 +78,29 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
         }
 
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdateCurrentUser([FromBody] UpdateUserDTO userdto)
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                throw new InvalidCredentialsException("No se pudo identificar al usuario desde el token.");
+            }
+
+            if (userdto == null)
+            {
+                return BadRequest("Datos de usuario inválidos.");
+            }
+
+            var result = await _userService.UpdateUserAsync(userId, userdto);
+            if (!result)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+            return NoContent();
+        }
+
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO userdto)
@@ -104,6 +127,29 @@ namespace Presentation.Controllers
                 return NotFound("No se pudo restaurar el usuario. Es posible que no exista o que ya esté activo.");
             }
             return Ok(user);
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteCurrentUser([FromQuery] bool permanently = false)
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                throw new InvalidCredentialsException("No se pudo identificar al usuario desde el token.");
+            }
+
+            if (permanently && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
+            {
+                throw new ValidationException("Los administradores no pueden eliminarse permanentemente a sí mismos por esta vía.");
+            }
+
+            var result = await _userService.DeleteUserAsync(userId, permanently);
+            if (!result)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
