@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Application.Models.Request.RewardExchangeDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -45,7 +46,14 @@ namespace Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> CreateExchange([FromBody] CreationRewardExchangeDTO exchangedto)
         {
-            var newExchange = await _exchangeService.CreateExchangeAsync(exchangedto);
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int clientId))
+            {
+                return Unauthorized("No se pudo identificar al cliente desde el token.");
+            }
+
+            var newExchange = await _exchangeService.CreateExchangeAsync(exchangedto, clientId);
             return CreatedAtAction(nameof(GetExchangeById), new { id = newExchange.Id }, newExchange);
         }
 
@@ -56,7 +64,7 @@ namespace Presentation.Controllers
             var exchange = await _exchangeService.RestoreExchangeAsync(id);
             if (exchange == null)
             {
-                 return NotFound("No se pudo restaurar el canje. Es posible que no exista o que ya esté activo.");
+                return NotFound("No se pudo restaurar el canje. Es posible que no exista o que ya esté activo.");
             }
             return Ok(exchange);
         }

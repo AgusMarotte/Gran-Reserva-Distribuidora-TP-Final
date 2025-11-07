@@ -8,7 +8,7 @@ namespace Application.Interfaces
         Task<OrderDTO> GetOrderByIdAsync(int id, bool includesoftdeleted = false);
         Task<List<OrderDTO>> GetAllOrdersAsync(bool includesoftdeleted = false);
         Task<List<OrderDTO>> GetOrdersByClientIdAsync(int clientId);
-        Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto);
+        Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto, int clientId);
         Task<bool> UpdateOrderStateAsync(int id, UpdateOrderStateDTO orderdto);
         Task<bool> DeleteOrderAsync(int id, bool permanently = false);
         Task<OrderDTO> RestoreOrderAsync(int id);

@@ -15,8 +15,8 @@ namespace Application.Services
         private readonly IUserRepository _userRepository;
 
         public RewardExchangeService(
-            IRewardExchangeRepository exchangeRepository, 
-            IRewardRepository rewardRepository, 
+            IRewardExchangeRepository exchangeRepository,
+            IRewardRepository rewardRepository,
             IClientRepository clientRepository,
             IUserRepository userRepository)
         {
@@ -31,7 +31,7 @@ namespace Application.Services
             var exchange = includesoftdeleted
                 ? await _exchangeRepository.GetByIdAsync(id)
                 : await _exchangeRepository.GetActiveByIdAsync(id);
-            
+
             return RewardExchangeDTO.Create(exchange);
         }
 
@@ -40,7 +40,7 @@ namespace Application.Services
             var exchanges = includesoftdeleted
                 ? await _exchangeRepository.GetAllAsync()
                 : await _exchangeRepository.GetActiveAllAsync();
-            
+
             return RewardExchangeDTO.CreateList(exchanges);
         }
 
@@ -50,19 +50,19 @@ namespace Application.Services
             return RewardExchangeDTO.CreateList(exchanges);
         }
 
-        public async Task<RewardExchangeDTO> CreateExchangeAsync(CreationRewardExchangeDTO exchangedto)
+        public async Task<RewardExchangeDTO> CreateExchangeAsync(CreationRewardExchangeDTO exchangedto, int clientId)
         {
             //Validar Cliente
-            var client = await _clientRepository.GetByIdAsync(exchangedto.ClientId);
+            var client = await _clientRepository.GetByIdAsync(clientId);
 
             if (client == null)
             {
-                var user = await _userRepository.GetActiveByIdAsync(exchangedto.ClientId);
+                var user = await _userRepository.GetActiveByIdAsync(clientId);
                 if (user != null)
                 {
-                    throw new ValidationException($"El usuario con ID {exchangedto.ClientId} es un '{user.Role}' y no puede realizar canjes.");
+                    throw new ValidationException($"El usuario con ID {clientId} es un '{user.Role}' y no puede realizar canjes.");
                 }
-                throw new NotFoundException($"No se encontró ningún cliente con ID {exchangedto.ClientId}.");
+                throw new NotFoundException($"No se encontró ningún cliente con ID {clientId}.");
             }
 
             if (client.IsDeleted)
@@ -99,7 +99,7 @@ namespace Application.Services
             //Crear la entidad de canje
             var exchangeEntity = new RewardExchange
             {
-                ClientId = exchangedto.ClientId,
+                ClientId = clientId,
                 RewardId = exchangedto.RewardId,
                 PointsUsed = reward.PointsRequired,
                 Date = DateTime.UtcNow

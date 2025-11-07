@@ -39,6 +39,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
 
+/*
+IMPORTANTE
+Recordar instalar Microsoft.EntityFrameworkCore.SqlServer en vez de Pomelo
+
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    options.UseSqlServer(connectionString)
+);
+*/
+
 //Inyeccion de Dependencias
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();

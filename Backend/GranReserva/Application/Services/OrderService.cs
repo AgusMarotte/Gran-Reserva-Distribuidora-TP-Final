@@ -27,7 +27,7 @@ namespace Application.Services
             var order = includesoftdeleted
                 ? await _orderRepository.GetByIdAsync(id)
                 : await _orderRepository.GetActiveByIdAsync(id);
-            
+
             return OrderDTO.Create(order);
         }
 
@@ -36,7 +36,7 @@ namespace Application.Services
             var orders = includesoftdeleted
                 ? await _orderRepository.GetAllAsync()
                 : await _orderRepository.GetActiveAllAsync();
-            
+
             return OrderDTO.CreateList(orders);
         }
 
@@ -46,18 +46,18 @@ namespace Application.Services
             return OrderDTO.CreateList(orders);
         }
 
-        public async Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto)
+        public async Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto, int clientId)
         {
-            var client = await _clientRepository.GetByIdAsync(orderdto.ClientId);
+            var client = await _clientRepository.GetByIdAsync(clientId);
             if (client == null)
             {
-                var user = await _userRepository.GetActiveByIdAsync(orderdto.ClientId);
+                var user = await _userRepository.GetActiveByIdAsync(clientId);
                 if (user != null)
                 {
-                    throw new ValidationException($"El usuario con ID {orderdto.ClientId} es un '{user.Role}' y no puede crear órdenes.");
+                    throw new ValidationException($"El usuario con ID {clientId} es un '{user.Role}' y no puede crear órdenes.");
                 }
 
-                throw new NotFoundException($"No se encontró ningún cliente con ID {orderdto.ClientId}.");
+                throw new NotFoundException($"No se encontró ningún cliente con ID {clientId}.");
             }
 
             if (client.IsDeleted)
@@ -67,7 +67,7 @@ namespace Application.Services
 
             var newOrder = new Order
             {
-                ClientId = orderdto.ClientId,
+                ClientId = clientId,
                 Date = DateTime.UtcNow,
                 State = Domain.Enums.OrderStatus.Pending
             };
@@ -102,12 +102,12 @@ namespace Application.Services
             }
 
             newOrder.Total = total;
-            
+
             client.Points += (total / 100);
             await _clientRepository.UpdateAsync(client);
 
             var createdOrder = await _orderRepository.AddAsync(newOrder);
-            
+
             var fullOrder = await _orderRepository.GetActiveByIdAsync(createdOrder.Id);
             return OrderDTO.Create(fullOrder);
         }
@@ -119,7 +119,7 @@ namespace Application.Services
             {
                 return false;
             }
-            
+
             order.State = orderdto.NewState;
             await _orderRepository.UpdateAsync(order);
             return true;
@@ -150,7 +150,7 @@ namespace Application.Services
             {
                 return null;
             }
-            
+
             await _orderRepository.RestoreAsync(order);
             return OrderDTO.Create(order);
         }

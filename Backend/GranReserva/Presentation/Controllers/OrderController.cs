@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Application.Models.Request.OrderDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -45,7 +46,14 @@ namespace Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] CreationOrderDTO orderdto)
         {
-            var newOrder = await _orderService.CreateOrderAsync(orderdto);
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int clientId))
+            {
+                return Unauthorized("No se pudo identificar al cliente desde el token.");
+            }
+
+            var newOrder = await _orderService.CreateOrderAsync(orderdto, clientId);
             return CreatedAtAction(nameof(GetOrderById), new { id = newOrder.Id }, newOrder);
         }
 
