@@ -6,10 +6,12 @@ namespace Application.Models.Request.UserDTO
     public class CreationUserDTO
     {
         [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [RegularExpression(@"^[\p{L}\s]+$", ErrorMessage = "El campo solo puede contener letras.")]
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El apellido es obligatorio.")]
+        [RegularExpression(@"^[\p{L}\s]+$", ErrorMessage = "El campo solo puede contener letras.")]
         [StringLength(100)]
         public string LastName { get; set; } = string.Empty;
 
