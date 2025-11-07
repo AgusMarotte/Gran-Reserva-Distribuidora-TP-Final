@@ -59,6 +59,21 @@ namespace Application.Services
             return UserDTO.CreateList(users);
         }
 
+        public async Task<long> GetUserPointsAsync(int userId)
+        {
+            var user = await _userRepository.GetActiveByIdAsync(userId);
+            if (user == null)
+            {
+                throw new NotFoundException("Usuario no encontrado.");
+            }
+
+            if (user is Client client)
+            {
+                return client.Points;
+            }
+
+            throw new ValidationException("Solo los Clientes pueden consultar los puntos disponibles.");
+        }
         public async Task<UserDTO> CreateUserAsync(CreationUserDTO userdto)
         {
             var existingUser = await _userRepository.GetActiveByEmailAsync(userdto.Email);

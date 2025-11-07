@@ -164,6 +164,20 @@ namespace Presentation.Controllers
             return NoContent();
         }
 
+        [HttpGet("points")]
+        [Authorize]
+        public async Task<IActionResult> GetMyPoints()
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                throw new InvalidCredentialsException("No se pudo identificar al usuario desde el token.");
+            }
+
+            var points = await _userService.GetUserPointsAsync(userId);
+            return Ok(new { Points = points });
+        }
+
         [HttpPatch("{id}/points")]
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> UpdatePoints(int id, [FromBody] UpdatePointsDTO dto)

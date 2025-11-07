@@ -13,6 +13,8 @@ namespace Application.Models
         public string ClientName { get; set; } = string.Empty;
         public List<OrderDetailDTO> OrderDetails { get; set; } = new List<OrderDetailDTO>();
         public string QrCodeBase64 { get; set; } = string.Empty;
+        public long? PointsEarned { get; set; }
+        public long? ClientCurrentPoints { get; set; }
 
         public static OrderDTO? Create(Order order)
         {

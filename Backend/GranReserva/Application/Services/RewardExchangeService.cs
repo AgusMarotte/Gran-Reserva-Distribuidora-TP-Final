@@ -149,6 +149,7 @@ namespace Application.Services
             if (dto != null)
             {
                 dto.QrCodeBase64 = GenerateQrBase64(fullExchange.QRCode);
+                dto.ClientCurrentPoints = client.Points;
             }
             return dto;
         }

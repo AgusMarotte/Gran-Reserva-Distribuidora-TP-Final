@@ -154,6 +154,8 @@ namespace Application.Services
             if (dto != null)
             {
                 dto.QrCodeBase64 = GenerateQrBase64(fullOrder.QRCode);
+                dto.PointsEarned = pointsAwarded;
+                dto.ClientCurrentPoints = client.Points;
             }
             return dto;
         }

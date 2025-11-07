@@ -12,6 +12,7 @@ namespace Application.Models
         public int RewardId { get; set; }
         public string RewardName { get; set; } = string.Empty;
         public string QrCodeBase64 { get; set; } = string.Empty;
+        public long? ClientCurrentPoints { get; set; }
 
         public static RewardExchangeDTO? Create(RewardExchange exchange)
         {
