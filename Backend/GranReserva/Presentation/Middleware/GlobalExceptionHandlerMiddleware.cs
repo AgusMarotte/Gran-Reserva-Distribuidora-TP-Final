@@ -40,6 +40,10 @@ namespace Presentation.Middleware
                     statusCode = HttpStatusCode.NotFound;
                     message = notFoundException.Message;
                     break;
+                case InvalidCredentialsException invalidCredentialsException:
+                    statusCode = HttpStatusCode.Unauthorized;
+                    message = invalidCredentialsException.Message;
+                    break;
                 default:
                     statusCode = HttpStatusCode.InternalServerError;
                     message = "Ocurrió un error interno inesperado.";

@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Models.Request.RewardExchangeDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -16,6 +17,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetAllExchanges([FromQuery] bool includesoftdeleted = false)
         {
             var exchanges = await _exchangeService.GetAllExchangesAsync(includesoftdeleted);
@@ -23,6 +25,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetExchangeById(int id, [FromQuery] bool includesoftdeleted = false)
         {
             var exchange = await _exchangeService.GetExchangeByIdAsync(id, includesoftdeleted);
@@ -31,6 +34,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("client/{clientId}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetExchangesByClientId(int clientId)
         {
             var exchanges = await _exchangeService.GetExchangesByClientIdAsync(clientId);
@@ -38,6 +42,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateExchange([FromBody] CreationRewardExchangeDTO exchangedto)
         {
             var newExchange = await _exchangeService.CreateExchangeAsync(exchangedto);
@@ -45,6 +50,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/restore")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> RestoreExchange(int id)
         {
             var exchange = await _exchangeService.RestoreExchangeAsync(id);
@@ -56,6 +62,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> DeleteExchange(int id, [FromQuery] bool permanently = false)
         {
             var result = await _exchangeService.DeleteExchangeAsync(id, permanently);

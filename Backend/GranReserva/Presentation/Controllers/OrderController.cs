@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Models.Request.OrderDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -16,6 +17,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetAllOrders([FromQuery] bool includesoftdeleted = false)
         {
             var orders = await _orderService.GetAllOrdersAsync(includesoftdeleted);
@@ -23,6 +25,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetOrderById(int id, [FromQuery] bool includesoftdeleted = false)
         {
             var order = await _orderService.GetOrderByIdAsync(id, includesoftdeleted);
@@ -31,6 +34,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("client/{clientId}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetOrdersByClientId(int clientId)
         {
             var orders = await _orderService.GetOrdersByClientIdAsync(clientId);
@@ -38,6 +42,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] CreationOrderDTO orderdto)
         {
             var newOrder = await _orderService.CreateOrderAsync(orderdto);
@@ -45,6 +50,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id}/state")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> UpdateOrderState(int id, [FromBody] UpdateOrderStateDTO orderdto)
         {
             var result = await _orderService.UpdateOrderStateAsync(id, orderdto);
@@ -53,6 +59,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/restore")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> RestoreOrder(int id)
         {
             var order = await _orderService.RestoreOrderAsync(id);
@@ -64,6 +71,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> DeleteOrder(int id, [FromQuery] bool permanently = false)
         {
             var result = await _orderService.DeleteOrderAsync(id, permanently);

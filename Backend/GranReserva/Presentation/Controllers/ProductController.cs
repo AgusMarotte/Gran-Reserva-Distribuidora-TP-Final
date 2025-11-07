@@ -2,6 +2,7 @@
 using Application.Models;
 using Application.Models.Request;
 using Application.Models.Request.ProductDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -37,6 +38,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> CreateProduct([FromBody] CreationProductDTO productdto)
         {
             if (productdto == null)
@@ -50,6 +52,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] UpdateProductDTO productdto)
         {
 
@@ -70,6 +73,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> PartialUpdateProduct(int id, [FromBody] ProductStockAndPriceDTO productstockandpricedto)
         {
             if (productstockandpricedto == null)
@@ -88,6 +92,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> DeleteProduct([FromRoute] int id, [FromQuery] bool permanently = false)
         {
             var result = await _productService.DeleteProductAsync(id, permanently);
@@ -101,6 +106,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/restore")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> RestoreProduct(int id)
         {
             var restoredProduct = await _productService.RestoreProductAsync(id);

@@ -5,6 +5,8 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Application.Services
 {
@@ -17,13 +19,29 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
+        public string ComputeSha256Hash(string rawData)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                StringBuilder builder = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2"));
+                }
+
+                return builder.ToString();
+            }
+        }
+
         public async Task<UserDTO> GetUserByIdAsync(int id, bool includesoftdeleted = false)
         {
             var user = includesoftdeleted
                 ? await _userRepository.GetByIdAsync(id)
                 : await _userRepository.GetActiveByIdAsync(id);
 
-            return UserDTO.Create(user);
+            return UserDTO.Create(user)!;
         }
 
         public async Task<List<UserDTO>> GetAllUsersAsync(bool includesoftdeleted = false)
@@ -51,6 +69,8 @@ namespace Application.Services
 
             bool anyUserExists = await _userRepository.AnyUserExistsAsync();
 
+            var hashedPassword = ComputeSha256Hash(userdto.Password);
+
             User newUser;
 
             if (anyUserExists)
@@ -61,7 +81,7 @@ namespace Application.Services
                     LastName = userdto.LastName,
                     PhoneNumber = userdto.PhoneNumber,
                     Email = userdto.Email,
-                    Password = userdto.Password,
+                    Password = hashedPassword,
                     Role = UserRole.User,
                     Points = 0
                 };
@@ -74,7 +94,7 @@ namespace Application.Services
                     LastName = userdto.LastName,
                     PhoneNumber = userdto.PhoneNumber,
                     Email = userdto.Email,
-                    Password = userdto.Password,
+                    Password = hashedPassword,
                     Role = UserRole.SuperAdmin
                 };
             }
@@ -96,18 +116,20 @@ namespace Application.Services
                 throw new ValidationException("El email ya está en uso.");
             }
 
+            var hashedPassword = ComputeSha256Hash(userdto.Password);
+
             var userEntity = new User
             {
                 Name = userdto.Name,
                 LastName = userdto.LastName,
                 PhoneNumber = userdto.PhoneNumber,
                 Email = userdto.Email,
-                Password = userdto.Password,
+                Password = hashedPassword,
                 Role = role,
             };
 
             var newUser = await _userRepository.AddAsync(userEntity);
-            return UserDTO.Create(newUser);
+            return UserDTO.Create(newUser)!;
         }
 
 
@@ -152,11 +174,11 @@ namespace Application.Services
 
             if (user == null || user.IsDeleted == false)
             {
-                return null;
+                return null!;
             }
 
             await _userRepository.RestoreAsync(user);
-            return UserDTO.Create(user);
+            return UserDTO.Create(user)!;
         }
 
         public async Task<UserDTO> UpdateClientPointsAsync(int clientId, UpdatePointsDTO dto)
@@ -164,7 +186,7 @@ namespace Application.Services
             var user = await _userRepository.GetActiveByIdAsync(clientId);
             if (user == null)
             {
-                return null;
+                return null!;
             }
 
             if (user is not Client client)
@@ -193,7 +215,27 @@ namespace Application.Services
 
             await _userRepository.UpdateAsync(client);
 
-            return UserDTO.Create(client);
+            return UserDTO.Create(client)!;
+        }
+
+        public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePasswordDTO)
+        {
+            var user = await _userRepository.GetActiveByIdAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var hashedPassword = ComputeSha256Hash(changePasswordDTO.CurrentPassword);
+            if (user.Password != hashedPassword)
+            {
+                throw new ValidationException("La contraseña actual es incorrecta.");
+            }
+
+            user.Password = ComputeSha256Hash(changePasswordDTO.NewPassword);
+            await _userRepository.UpdateAsync(user);
+
+            return true;
         }
     }
 }

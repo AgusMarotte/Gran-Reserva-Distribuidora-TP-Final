@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Application.Models;
 using Application.Models.Request;
 using Application.Models.Request.RewardDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -36,6 +37,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> CreateReward([FromBody] CreationRewardDTO rewarddto)
         {
             if (rewarddto == null)
@@ -47,6 +49,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> UpdateReward(int id, [FromBody] UpdateRewardDTO rewarddto)
         {
             if (rewarddto == null)
@@ -62,6 +65,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> PartialUpdateReward(int id, [FromBody] RewardStockAndPointsDTO rewardstockandpointsdto)
         {
             if (rewardstockandpointsdto == null)
@@ -80,6 +84,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/restore")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> RestoreReward(int id)
         {
             var reward = await _rewardService.RestoreRewardAsync(id);
@@ -91,6 +96,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> DeleteReward(int id, [FromQuery] bool permanently = false)
         {
             var result = await _rewardService.DeleteRewardAsync(id, permanently);

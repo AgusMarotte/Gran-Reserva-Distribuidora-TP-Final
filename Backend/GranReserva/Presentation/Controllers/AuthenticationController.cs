@@ -1,12 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interfaces;
+using Application.Models.Request;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
-    public class AuthenticationController : Controller
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthenticationController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly ICustomAuthenticationService _customAuthenticationService;
+
+        public AuthenticationController(ICustomAuthenticationService customAuthenticationService)
         {
-            return View();
+            _customAuthenticationService = customAuthenticationService;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<string>> Authenticate([FromBody] AuthenticationRequestDTO authenticationRequestDTO)
+        {
+            string newToken = await _customAuthenticationService.Authenticate(authenticationRequestDTO);
+            return newToken;
         }
     }
 }

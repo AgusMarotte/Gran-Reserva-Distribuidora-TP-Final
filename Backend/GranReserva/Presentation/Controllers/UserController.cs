@@ -3,7 +3,9 @@ using Application.Models.Request;
 using Application.Models.Request.UserDTO;
 using Domain.Enums;
 using Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -19,6 +21,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetAllUsers([FromQuery] bool includesoftdeleted = false)
         {
             var users = await _userService.GetAllUsersAsync(includesoftdeleted);
@@ -26,6 +29,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetUserById(int id, [FromQuery] bool includesoftdeleted = false)
         {
             var user = await _userService.GetUserByIdAsync(id, includesoftdeleted);
@@ -37,6 +41,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("search")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetUsersByNameOrLastName([FromQuery] string? name, [FromQuery] string? lastName)
         {
             var users = await _userService.GetUsersByNameOrLastNameAsync(name, lastName);
@@ -55,6 +60,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("admin")]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> CreateAdmin([FromBody] CreationUserDTO userdto, [FromQuery] AdminCreationRole role = AdminCreationRole.Admin)
         {
             if (userdto == null)
@@ -73,6 +79,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO userdto)
         {
             if (userdto == null)
@@ -88,6 +95,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/restore")]
+        [Authorize]
         public async Task<IActionResult> RestoreUser(int id)
         {
             var user = await _userService.RestoreUserAsync(id);
@@ -99,6 +107,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteUser(int id, [FromQuery] bool permanently = false)
         {
             var result = await _userService.DeleteUserAsync(id, permanently);
@@ -110,6 +119,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPatch("{id}/points")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> UpdatePoints(int id, [FromBody] UpdatePointsDTO dto)
         {
             if (dto == null)
@@ -125,6 +135,26 @@ namespace Presentation.Controllers
             }
 
             return Ok(updatedUser);
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDTO)
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.ChangePasswordAsync(userId, changePasswordDTO);
+            if (!result)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+
+            return NoContent();
         }
     }
 }

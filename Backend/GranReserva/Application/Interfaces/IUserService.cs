@@ -15,5 +15,6 @@ namespace Application.Interfaces
         Task<bool> DeleteUserAsync(int id, bool permanently = false);
         Task<UserDTO> RestoreUserAsync(int id);
         Task<UserDTO> UpdateClientPointsAsync(int clientId, UpdatePointsDTO pointsdto);
+        Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePasswordDTO);
     }
 }
