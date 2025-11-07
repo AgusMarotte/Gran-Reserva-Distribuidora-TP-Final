@@ -35,20 +35,27 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
+/*
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
+*/
 
-/*
-IMPORTANTE
-Recordar instalar Microsoft.EntityFrameworkCore.SqlServer en vez de Pomelo
+//IMPORTANTE
+//Recordar instalar Microsoft.EntityFrameworkCore.SqlServer en vez de Pomelo
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
-    options.UseSqlServer(connectionString)
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Reintentar hasta 5 veces
+            maxRetryDelay: TimeSpan.FromSeconds(30), // Esperar hasta 30s entre intentos
+            errorNumbersToAdd: null);
+    })
 );
-*/
+
 
 //Inyeccion de Dependencias
 builder.Services.AddScoped<IProductService, ProductService>();
