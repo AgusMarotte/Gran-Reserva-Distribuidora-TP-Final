@@ -11,11 +11,11 @@ namespace Application.Models
         public string ClientName { get; set; } = string.Empty;
         public int RewardId { get; set; }
         public string RewardName { get; set; } = string.Empty;
+        public string QrCodeBase64 { get; set; } = string.Empty;
 
         public static RewardExchangeDTO? Create(RewardExchange exchange)
         {
             if (exchange == null) return null;
-
 
             return new RewardExchangeDTO
             {

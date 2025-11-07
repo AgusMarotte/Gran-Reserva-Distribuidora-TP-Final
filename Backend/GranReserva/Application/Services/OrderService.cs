@@ -13,13 +13,26 @@ namespace Application.Services
         private readonly IProductRepository _productRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IQRService _qrService;
 
-        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IClientRepository clientRepository, IUserRepository userRepository)
+        public OrderService(
+            IOrderRepository orderRepository,
+            IProductRepository productRepository,
+            IClientRepository clientRepository,
+            IUserRepository userRepository,
+            IQRService qrService)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _clientRepository = clientRepository;
             _userRepository = userRepository;
+            _qrService = qrService;
+        }
+
+        private string GenerateQrBase64(Guid uniqueCode)
+        {
+            var qrBytes = _qrService.GenerateQRCode(uniqueCode.ToString());
+            return Convert.ToBase64String(qrBytes);
         }
 
         public async Task<OrderDTO> GetOrderByIdAsync(int id, bool includesoftdeleted = false)
@@ -28,7 +41,12 @@ namespace Application.Services
                 ? await _orderRepository.GetByIdAsync(id)
                 : await _orderRepository.GetActiveByIdAsync(id);
 
-            return OrderDTO.Create(order);
+            var dto = OrderDTO.Create(order);
+            if (dto != null)
+            {
+                dto.QrCodeBase64 = GenerateQrBase64(order.UniqueCode);
+            }
+            return dto;
         }
 
         public async Task<List<OrderDTO>> GetAllOrdersAsync(bool includesoftdeleted = false)
@@ -37,13 +55,26 @@ namespace Application.Services
                 ? await _orderRepository.GetAllAsync()
                 : await _orderRepository.GetActiveAllAsync();
 
-            return OrderDTO.CreateList(orders);
+            var dtos = OrderDTO.CreateList(orders);
+            foreach (var dto in dtos)
+            {
+                var originalOrder = orders.First(o => o.Id == dto.Id);
+                dto.QrCodeBase64 = GenerateQrBase64(originalOrder.UniqueCode);
+            }
+
+            return dtos;
         }
 
         public async Task<List<OrderDTO>> GetOrdersByClientIdAsync(int clientId)
         {
             var orders = await _orderRepository.GetActiveOrdersByClientIdAsync(clientId);
-            return OrderDTO.CreateList(orders);
+            var dtos = OrderDTO.CreateList(orders);
+            foreach (var dto in dtos)
+            {
+                var originalOrder = orders.First(o => o.Id == dto.Id);
+                dto.QrCodeBase64 = GenerateQrBase64(originalOrder.UniqueCode);
+            }
+            return dtos;
         }
 
         public async Task<OrderDTO> CreateOrderAsync(CreationOrderDTO orderdto, int clientId)
@@ -56,7 +87,6 @@ namespace Application.Services
                 {
                     throw new ValidationException($"El usuario con ID {clientId} es un '{user.Role}' y no puede crear órdenes.");
                 }
-
                 throw new NotFoundException($"No se encontró ningún cliente con ID {clientId}.");
             }
 
@@ -110,7 +140,12 @@ namespace Application.Services
             var createdOrder = await _orderRepository.AddAsync(newOrder);
 
             var fullOrder = await _orderRepository.GetActiveByIdAsync(createdOrder.Id);
-            return OrderDTO.Create(fullOrder);
+            var dto = OrderDTO.Create(fullOrder);
+            if (dto != null)
+            {
+                dto.QrCodeBase64 = GenerateQrBase64(fullOrder.UniqueCode);
+            }
+            return dto;
         }
 
         public async Task<bool> UpdateOrderStateAsync(int id, UpdateOrderStateDTO orderdto)
@@ -153,7 +188,12 @@ namespace Application.Services
             }
 
             await _orderRepository.RestoreAsync(order);
-            return OrderDTO.Create(order);
+            var dto = OrderDTO.Create(order);
+            if (dto != null)
+            {
+                dto.QrCodeBase64 = GenerateQrBase64(order.UniqueCode);
+            }
+            return dto;
         }
     }
 }

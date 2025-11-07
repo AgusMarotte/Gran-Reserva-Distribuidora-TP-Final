@@ -42,16 +42,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 */
 
-//IMPORTANTE
-//Recordar instalar Microsoft.EntityFrameworkCore.SqlServer en vez de Pomelo
-
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
     {
         sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5, // Reintentar hasta 5 veces
-            maxRetryDelay: TimeSpan.FromSeconds(30), // Esperar hasta 30s entre intentos
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null);
     })
 );
@@ -70,6 +67,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IRewardExchangeService, RewardExchangeService>();
 builder.Services.AddScoped<IRewardExchangeRepository, RewardExchangeRepository>();
 builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IQRService, QRService>();
 
 
 var jokesApiConfig = new ApiClientConfiguration();

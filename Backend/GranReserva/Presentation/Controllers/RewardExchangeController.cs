@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Models.Request.RewardExchangeDTO;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -42,6 +43,20 @@ namespace Presentation.Controllers
             return Ok(exchanges);
         }
 
+        [HttpGet("my-exchanges")]
+        [Authorize]
+        public async Task<IActionResult> GetMyExchanges()
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int clientId))
+            {
+                throw new InvalidCredentialsException("No se pudo identificar al cliente desde el token.");
+            }
+
+            var exchanges = await _exchangeService.GetExchangesByClientIdAsync(clientId);
+            return Ok(exchanges);
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateExchange([FromBody] CreationRewardExchangeDTO exchangedto)
@@ -50,7 +65,7 @@ namespace Presentation.Controllers
 
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int clientId))
             {
-                return Unauthorized("No se pudo identificar al cliente desde el token.");
+                throw new InvalidCredentialsException("No se pudo identificar al cliente desde el token.");
             }
 
             var newExchange = await _exchangeService.CreateExchangeAsync(exchangedto, clientId);

@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Application.Models.Request.OrderDTO;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -42,6 +43,20 @@ namespace Presentation.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("my-orders")]
+        [Authorize]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int clientId))
+            {
+                throw new InvalidCredentialsException("No se pudo identificar al cliente desde el token.");
+            }
+
+            var orders = await _orderService.GetOrdersByClientIdAsync(clientId);
+            return Ok(orders);
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateOrder([FromBody] CreationOrderDTO orderdto)
@@ -50,7 +65,7 @@ namespace Presentation.Controllers
 
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int clientId))
             {
-                return Unauthorized("No se pudo identificar al cliente desde el token.");
+                throw new InvalidCredentialsException("No se pudo identificar al cliente desde el token.");
             }
 
             var newOrder = await _orderService.CreateOrderAsync(orderdto, clientId);

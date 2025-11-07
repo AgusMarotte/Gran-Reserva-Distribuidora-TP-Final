@@ -13,17 +13,26 @@ namespace Application.Services
         private readonly IRewardRepository _rewardRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IQRService _qrService;
 
         public RewardExchangeService(
             IRewardExchangeRepository exchangeRepository,
             IRewardRepository rewardRepository,
             IClientRepository clientRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IQRService qrService)
         {
             _exchangeRepository = exchangeRepository;
             _rewardRepository = rewardRepository;
             _clientRepository = clientRepository;
             _userRepository = userRepository;
+            _qrService = qrService;
+        }
+
+        private string GenerateQrBase64(Guid uniqueCode)
+        {
+            var qrBytes = _qrService.GenerateQRCode(uniqueCode.ToString());
+            return Convert.ToBase64String(qrBytes);
         }
 
         public async Task<RewardExchangeDTO> GetExchangeByIdAsync(int id, bool includesoftdeleted = false)
@@ -32,7 +41,12 @@ namespace Application.Services
                 ? await _exchangeRepository.GetByIdAsync(id)
                 : await _exchangeRepository.GetActiveByIdAsync(id);
 
-            return RewardExchangeDTO.Create(exchange);
+            var dto = RewardExchangeDTO.Create(exchange);
+            if (dto != null)
+            {
+                dto.QrCodeBase64 = GenerateQrBase64(exchange.UniqueCode);
+            }
+            return dto;
         }
 
         public async Task<List<RewardExchangeDTO>> GetAllExchangesAsync(bool includesoftdeleted = false)
@@ -41,20 +55,32 @@ namespace Application.Services
                 ? await _exchangeRepository.GetAllAsync()
                 : await _exchangeRepository.GetActiveAllAsync();
 
-            return RewardExchangeDTO.CreateList(exchanges);
+            var dtos = RewardExchangeDTO.CreateList(exchanges);
+            foreach (var dto in dtos)
+            {
+                var original = exchanges.First(e => e.Id == dto.Id);
+                dto.QrCodeBase64 = GenerateQrBase64(original.UniqueCode);
+            }
+            return dtos;
         }
 
         public async Task<List<RewardExchangeDTO>> GetExchangesByClientIdAsync(int clientId)
         {
             var exchanges = await _exchangeRepository.GetActiveExchangesByClientIdAsync(clientId);
-            return RewardExchangeDTO.CreateList(exchanges);
+            var dtos = RewardExchangeDTO.CreateList(exchanges);
+            foreach (var dto in dtos)
+            {
+                var original = exchanges.First(e => e.Id == dto.Id);
+                dto.QrCodeBase64 = GenerateQrBase64(original.UniqueCode);
+            }
+            return dtos;
         }
 
         public async Task<RewardExchangeDTO> CreateExchangeAsync(CreationRewardExchangeDTO exchangedto, int clientId)
         {
-            //Validar Cliente
             var client = await _clientRepository.GetByIdAsync(clientId);
 
+            //Validar Cliente
             if (client == null)
             {
                 var user = await _userRepository.GetActiveByIdAsync(clientId);
@@ -109,7 +135,12 @@ namespace Application.Services
 
             //Obtener la entidad completa y mapear a DTO
             var fullExchange = await _exchangeRepository.GetActiveByIdAsync(createdExchange.Id);
-            return RewardExchangeDTO.Create(fullExchange);
+            var dto = RewardExchangeDTO.Create(fullExchange);
+            if (dto != null)
+            {
+                dto.QrCodeBase64 = GenerateQrBase64(fullExchange.UniqueCode);
+            }
+            return dto;
         }
 
         public async Task<bool> DeleteExchangeAsync(int id, bool permanently = false)
@@ -139,7 +170,12 @@ namespace Application.Services
             }
 
             await _exchangeRepository.RestoreAsync(exchange);
-            return RewardExchangeDTO.Create(exchange);
+            var dto = RewardExchangeDTO.Create(exchange);
+            if (dto != null)
+            {
+                dto.QrCodeBase64 = GenerateQrBase64(exchange.UniqueCode);
+            }
+            return dto;
         }
     }
 }
