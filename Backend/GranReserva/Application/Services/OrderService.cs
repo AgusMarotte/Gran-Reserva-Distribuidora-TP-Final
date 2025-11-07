@@ -103,7 +103,8 @@ namespace Application.Services
 
             newOrder.Total = total;
 
-            client.Points += (total / 100);
+            long pointsAwarded = (long)Math.Ceiling(total * 0.01);
+            client.Points += pointsAwarded;
             await _clientRepository.UpdateAsync(client);
 
             var createdOrder = await _orderRepository.AddAsync(newOrder);
