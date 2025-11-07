@@ -45,6 +45,14 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<RewardExchange?> GetByQRCodeAsync(Guid qrCode)
+        {
+            return await _dbSet
+                .Include(e => e.Client)
+                .Include(e => e.Reward)
+                .FirstOrDefaultAsync(e => e.QRCode == qrCode && !e.IsDeleted);
+        }
+
         public async Task DeleteSoftAsync(RewardExchange exchange)
         {
             exchange.IsDeleted = true;

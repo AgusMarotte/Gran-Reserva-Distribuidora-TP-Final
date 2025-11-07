@@ -35,6 +35,15 @@ namespace Presentation.Controllers
             return Ok(order);
         }
 
+        [HttpGet("qr/{qrCode}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+        public async Task<IActionResult> GetOrderByQr([FromRoute] Guid qrCode)
+        {
+            var order = await _orderService.GetByQRCodeAsync(qrCode);
+            if (order == null) return NotFound("No se ha encontrado una Orden con ese código QR.");
+            return Ok(order);
+        }
+
         [HttpGet("client/{clientId}")]
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetOrdersByClientId(int clientId)

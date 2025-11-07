@@ -44,8 +44,18 @@ namespace Application.Services
             var dto = RewardExchangeDTO.Create(exchange);
             if (dto != null)
             {
-                dto.QrCodeBase64 = GenerateQrBase64(exchange.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(exchange.QRCode);
             }
+            return dto;
+        }
+
+        public async Task<RewardExchangeDTO> GetByQRCodeAsync(Guid qrCode)
+        {
+            var exchange = await _exchangeRepository.GetByQRCodeAsync(qrCode);
+            if (exchange == null) return null;
+
+            var dto = RewardExchangeDTO.Create(exchange);
+            dto.QrCodeBase64 = GenerateQrBase64(exchange.QRCode);
             return dto;
         }
 
@@ -59,7 +69,7 @@ namespace Application.Services
             foreach (var dto in dtos)
             {
                 var original = exchanges.First(e => e.Id == dto.Id);
-                dto.QrCodeBase64 = GenerateQrBase64(original.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(original.QRCode);
             }
             return dtos;
         }
@@ -71,7 +81,7 @@ namespace Application.Services
             foreach (var dto in dtos)
             {
                 var original = exchanges.First(e => e.Id == dto.Id);
-                dto.QrCodeBase64 = GenerateQrBase64(original.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(original.QRCode);
             }
             return dtos;
         }
@@ -138,7 +148,7 @@ namespace Application.Services
             var dto = RewardExchangeDTO.Create(fullExchange);
             if (dto != null)
             {
-                dto.QrCodeBase64 = GenerateQrBase64(fullExchange.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(fullExchange.QRCode);
             }
             return dto;
         }
@@ -173,7 +183,7 @@ namespace Application.Services
             var dto = RewardExchangeDTO.Create(exchange);
             if (dto != null)
             {
-                dto.QrCodeBase64 = GenerateQrBase64(exchange.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(exchange.QRCode);
             }
             return dto;
         }

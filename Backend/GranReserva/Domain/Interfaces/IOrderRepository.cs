@@ -7,6 +7,7 @@ namespace Domain.Interfaces
         Task<Order> GetActiveByIdAsync(int id);
         Task<List<Order>> GetActiveAllAsync();
         Task<List<Order>> GetActiveOrdersByClientIdAsync(int clientId);
+        Task<Order?> GetByQRCodeAsync(Guid qrCode);
         Task DeleteSoftAsync(Order order);
         Task RestoreAsync(Order order);
     }

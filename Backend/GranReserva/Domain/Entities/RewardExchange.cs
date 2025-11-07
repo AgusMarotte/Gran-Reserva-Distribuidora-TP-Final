@@ -10,6 +10,6 @@ namespace Domain.Entities
         public int RewardId { get; set; }
         public Reward? Reward { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public Guid UniqueCode { get; set; } = Guid.NewGuid();
+        public Guid QRCode { get; set; } = Guid.NewGuid();
     }
 }

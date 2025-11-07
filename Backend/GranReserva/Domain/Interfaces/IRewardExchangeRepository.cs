@@ -7,6 +7,7 @@ namespace Domain.Interfaces
         Task<RewardExchange> GetActiveByIdAsync(int id);
         Task<List<RewardExchange>> GetActiveAllAsync();
         Task<List<RewardExchange>> GetActiveExchangesByClientIdAsync(int clientId);
+        Task<RewardExchange?> GetByQRCodeAsync(Guid qrCode);
         Task DeleteSoftAsync(RewardExchange exchange);
         Task RestoreAsync(RewardExchange exchange);
     }

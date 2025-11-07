@@ -35,6 +35,15 @@ namespace Presentation.Controllers
             return Ok(exchange);
         }
 
+        [HttpGet("qr/{qrCode}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+        public async Task<IActionResult> GetExchangeByQr([FromRoute] Guid qrCode)
+        {
+            var exchange = await _exchangeService.GetByQRCodeAsync(qrCode);
+            if (exchange == null) return NotFound("No se ha encontrado un Canje con ese código QR.");
+            return Ok(exchange);
+        }
+
         [HttpGet("client/{clientId}")]
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetExchangesByClientId(int clientId)

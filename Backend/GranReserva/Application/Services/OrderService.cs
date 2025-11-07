@@ -44,8 +44,18 @@ namespace Application.Services
             var dto = OrderDTO.Create(order);
             if (dto != null)
             {
-                dto.QrCodeBase64 = GenerateQrBase64(order.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(order.QRCode);
             }
+            return dto;
+        }
+
+        public async Task<OrderDTO> GetByQRCodeAsync(Guid qrCode)
+        {
+            var order = await _orderRepository.GetByQRCodeAsync(qrCode);
+            if (order == null) return null;
+
+            var dto = OrderDTO.Create(order);
+            dto.QrCodeBase64 = GenerateQrBase64(order.QRCode);
             return dto;
         }
 
@@ -59,7 +69,7 @@ namespace Application.Services
             foreach (var dto in dtos)
             {
                 var originalOrder = orders.First(o => o.Id == dto.Id);
-                dto.QrCodeBase64 = GenerateQrBase64(originalOrder.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(originalOrder.QRCode);
             }
 
             return dtos;
@@ -72,7 +82,7 @@ namespace Application.Services
             foreach (var dto in dtos)
             {
                 var originalOrder = orders.First(o => o.Id == dto.Id);
-                dto.QrCodeBase64 = GenerateQrBase64(originalOrder.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(originalOrder.QRCode);
             }
             return dtos;
         }
@@ -143,7 +153,7 @@ namespace Application.Services
             var dto = OrderDTO.Create(fullOrder);
             if (dto != null)
             {
-                dto.QrCodeBase64 = GenerateQrBase64(fullOrder.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(fullOrder.QRCode);
             }
             return dto;
         }
@@ -191,7 +201,7 @@ namespace Application.Services
             var dto = OrderDTO.Create(order);
             if (dto != null)
             {
-                dto.QrCodeBase64 = GenerateQrBase64(order.UniqueCode);
+                dto.QrCodeBase64 = GenerateQrBase64(order.QRCode);
             }
             return dto;
         }

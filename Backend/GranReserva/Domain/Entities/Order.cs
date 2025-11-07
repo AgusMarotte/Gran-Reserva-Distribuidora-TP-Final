@@ -12,6 +12,6 @@ namespace Domain.Entities
         public Client Client { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
         public bool IsDeleted { get; set; } = false;
-        public Guid UniqueCode { get; set; } = Guid.NewGuid();
+        public Guid QRCode { get; set; } = Guid.NewGuid();
     }
 }

@@ -47,6 +47,15 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Order?> GetByQRCodeAsync(Guid qrCode)
+        {
+            return await _dbSet
+                .Include(o => o.Client)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .FirstOrDefaultAsync(o => o.QRCode == qrCode && !o.IsDeleted);
+        }
+
         public async Task DeleteSoftAsync(Order order)
         {
             order.IsDeleted = true;
