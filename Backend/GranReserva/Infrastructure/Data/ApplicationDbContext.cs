@@ -11,6 +11,9 @@ namespace Infrastructure.Data
         
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Reward> Rewards { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }

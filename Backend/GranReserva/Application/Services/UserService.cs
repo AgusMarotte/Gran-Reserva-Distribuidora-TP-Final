@@ -103,7 +103,7 @@ namespace Application.Services
             }
             else
             {
-                newUser = new User
+                newUser = new SuperAdmin
                 {
                     Name = userdto.Name,
                     LastName = userdto.LastName,
@@ -133,15 +133,32 @@ namespace Application.Services
 
             var hashedPassword = ComputeSha256Hash(userdto.Password);
 
-            var userEntity = new User
+            User userEntity;
+
+            if (role == UserRole.SuperAdmin)
             {
-                Name = userdto.Name,
-                LastName = userdto.LastName,
-                PhoneNumber = userdto.PhoneNumber,
-                Email = userdto.Email,
-                Password = hashedPassword,
-                Role = role,
-            };
+                userEntity = new SuperAdmin
+                {
+                    Name = userdto.Name,
+                    LastName = userdto.LastName,
+                    PhoneNumber = userdto.PhoneNumber,
+                    Email = userdto.Email,
+                    Password = hashedPassword,
+                    Role = UserRole.SuperAdmin,
+                };
+            }
+            else
+            {
+                userEntity = new Admin
+                {
+                    Name = userdto.Name,
+                    LastName = userdto.LastName,
+                    PhoneNumber = userdto.PhoneNumber,
+                    Email = userdto.Email,
+                    Password = hashedPassword,
+                    Role = UserRole.Admin,
+                };
+            }
 
             var newUser = await _userRepository.AddAsync(userEntity);
             return UserDTO.Create(newUser)!;

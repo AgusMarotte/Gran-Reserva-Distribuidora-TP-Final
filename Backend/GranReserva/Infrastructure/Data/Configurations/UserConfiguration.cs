@@ -38,10 +38,10 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasConversion<string>();
 
-            builder.HasDiscriminator<string>("Role")
-                .HasValue<User>(UserRole.Admin.ToString())
-                .HasValue<User>(UserRole.SuperAdmin.ToString())
-                .HasValue<Client>(UserRole.User.ToString());
+            builder.HasDiscriminator(u => u.Role)
+                .HasValue<Admin>(UserRole.Admin)
+                .HasValue<SuperAdmin>(UserRole.SuperAdmin)
+                .HasValue<Client>(UserRole.User);
         }
     }
 }
