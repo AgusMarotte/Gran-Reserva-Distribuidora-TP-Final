@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import "./Footer.css";
 
 const Footer = () => {
@@ -56,17 +57,16 @@ const Footer = () => {
           &copy; {currentYear} Gran Reserva Distribuidora. Todos los derechos
           reservados.
         </p>
-
         <nav className="footer-nav" aria-label="Enlaces del pie de página">
-          <a href="#" className="footer-link">
+          <Link to="/privacy" className="footer-link">
             Política de Privacidad
-          </a>
-          <a href="#" className="footer-link">
-            Términos de Servicio
-          </a>
-          <a href="#" className="footer-link">
+          </Link>
+          <Link to="/terms" className="footer-link">
+            Términos y Condiciones
+          </Link>
+          <Link to="/contact" className="footer-link">
             Contacto
-          </a>
+          </Link>
         </nav>
       </div>
     </footer>
