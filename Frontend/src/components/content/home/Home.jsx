@@ -1,73 +1,96 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { useEffect, useState } from "react";
 import "./Home.css";
 import card1 from "../../../assets/images/card1.png";
 import card2 from "../../../assets/images/card2.png";
 import card3 from "../../../assets/images/card3.png";
 
 const Home = () => {
-  const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 1);
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const elements = document.querySelectorAll(".home-section");
+
+    if (!("IntersectionObserver" in window)) {
+      elements.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    let visibleSections = new Set();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target;
+
+          if (entry.intersectionRatio > 0.45) {
+            visibleSections.add(el);
+            el.classList.add("is-visible");
+          } else if (entry.intersectionRatio < 0.25) {
+            visibleSections.delete(el);
+            el.classList.remove("is-visible");
+          }
+        });
+      },
+      { threshold: [0, 0.25, 0.45, 1] }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <Container className="home-container my-5">
-      <div>
-        <Row className="align-items-center">
-          <Col md={6} className="position-relative mb-4 mb-md-0">
-            <img
-              src={card1}
-              alt="Imagen descriptiva"
-              className="home-image-left vignette-gradient"
-            />
-            <div className="vignette-overlay"></div>
-          </Col>
-          <Col md={6} className="text-white text-center text-md-start">
-            <h2 className="home-title">
-              {" "}
-              Bienvenido a Gran Reserva Distribuidora
-            </h2>
-            <p className="home-description">
-              Tu socio confiable en la distribución de bebidas de calidad.
-              Explora nuestra amplia gama de productos y descubre por qué somos
-              la elección preferida para los amantes de las bebidas.
-            </p>
-          </Col>
-        </Row>
-      </div>
+    <div className="scroll-container">
+      <section className="home-section">
+        <img src={card1} alt="Imagen 1" className="home-image" />
+        <Container className="home-text text-center text-white">
+          <Row className="justify-content-center align-items-center">
+            <Col md={10} lg={8}>
+              <h2 className="home-title">
+                Bienvenido a Gran Reserva Distribuidora
+              </h2>
+              <p className="home-description">
+                Tu socio confiable en la distribución de bebidas de calidad.
+                Explorá nuestra amplia gama de productos y descubrí por qué
+                somos la elección preferida para los amantes de las bebidas.
+              </p>
+            </Col>
+          </Row>
+        </Container>
+      </section>
 
-      <div>
-        <Row className="align-items-center">
-          <Col md={6} className="text-white text-center text-md-end">
-            <h2 className="home-title">
-              {" "}
-              Contamos con una gran selección de vinos{" "}
-            </h2>
-            <p className="home-description">
-              Desde tintos robustos hasta blancos frescos, nuestra colección de
-              vinos satisface todos los paladares y ocasiones. Ya sea que estés
-              buscando un vino para una cena especial o simplemente para
-              disfrutar
-            </p>
-          </Col>
-          <Col md={6} className="position-relative mb-4 mb-md-0">
-            <img
-              src={card2}
-              alt="Imagen descriptiva"
-              className="home-image vignette-gradient"
-            />
-            <div className="vignette-overlay"></div>
-          </Col>
-        </Row>
-      </div>
-    </Container>
+      <section className="home-section">
+        <img src={card2} alt="Imagen 2" className="home-image" />
+        <Container className="home-text text-center text-white">
+          <Row className="justify-content-center align-items-center">
+            <Col md={10} lg={8}>
+              <h2 className="home-title">
+                Contamos con una gran selección de vinos
+              </h2>
+              <p className="home-description">
+                Desde tintos robustos hasta blancos frescos, nuestra colección
+                de vinos satisface todos los paladares y ocasiones.
+              </p>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+
+      <section className="home-section">
+        <img src={card3} alt="Imagen 3" className="home-image" />
+        <Container className="home-text text-center text-white">
+          <Row className="justify-content-center align-items-center">
+            <Col md={10} lg={8}>
+              <h2 className="home-title">
+                La esencia del vino, guardada con pasión
+              </h2>
+              <p className="home-description">
+                En nuestras bodegas, cada botella reposa en condiciones ideales,
+                preservando su sabor y carácter únicos.
+              </p>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+    </div>
   );
 };
 
