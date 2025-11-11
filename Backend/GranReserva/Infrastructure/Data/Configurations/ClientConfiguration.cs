@@ -11,8 +11,6 @@ namespace Infrastructure.Data.Configurations
             builder.Property(c => c.Points)
                 .IsRequired()
                 .HasDefaultValue(0);
-
-            builder.ToTable(tb => tb.HasCheckConstraint("CK_Client_Points", "Points >= 0"));
         }
     }
 }

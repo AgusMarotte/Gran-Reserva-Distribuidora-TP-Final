@@ -57,7 +57,14 @@ const Footer = () => {
           &copy; {currentYear} Gran Reserva Distribuidora. Todos los derechos
           reservados.
         </p>
-        <nav className="footer-nav" aria-label="Enlaces del pie de página">
+        <nav className="footer-nav">
+          <Link
+            to="https://github.com/AgusMarotte/Gran-Reserva-Distribuidora-TP-Final"
+            className="footer-link"
+          >
+            <Github />
+            Github
+          </Link>
           <Link to="/privacy" className="footer-link">
             Política de Privacidad
           </Link>
@@ -65,7 +72,8 @@ const Footer = () => {
             Términos y Condiciones
           </Link>
           <Link to="/contact" className="footer-link">
-            Contacto
+            <EnvelopeAtFill />
+            Contactanos
           </Link>
         </nav>
       </div>
