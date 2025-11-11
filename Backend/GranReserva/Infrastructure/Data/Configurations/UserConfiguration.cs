@@ -37,11 +37,6 @@ namespace Infrastructure.Data.Configurations
             builder.Property(u => u.Role)
                 .IsRequired()
                 .HasConversion<string>();
-
-            builder.HasDiscriminator<UserRole>("Role")
-                .HasValue<User>(UserRole.Admin)
-                .HasValue<User>(UserRole.SuperAdmin)
-                .HasValue<Client>(UserRole.User);
         }
     }
 }
