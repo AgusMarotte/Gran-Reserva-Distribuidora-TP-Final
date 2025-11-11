@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Terms from "./components/content/legal/terms/Terms.jsx";
 import Privacy from "./components/content/legal/privacy/Privacy.jsx";
 import Products from "./components/content/products/Products.jsx";
+import Login from "./components/content/login/Login.jsx";
 
 
 function App() {
@@ -20,8 +21,8 @@ function App() {
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} /> */}
+          <Route path="/login" element={<Login />} />
+         {/* <Route path="/register" element={<Register />} /> */}
           <Route path="/products" element={<Products />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} /> 

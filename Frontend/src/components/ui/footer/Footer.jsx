@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { Github, EnvelopeAtFill } from "react-bootstrap-icons";
 import "./Footer.css";
 
 const Footer = () => {
