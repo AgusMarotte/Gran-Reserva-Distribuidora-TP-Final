@@ -148,7 +148,10 @@ const Register = () => {
                   </Form.Group>
                 </Row>
 
-                <Form.Group className="mb-3" controlId="formLoginEmail">
+                <Form.Group
+                  className="mb-3"
+                  controlId="formRegisterPhoneNumber"
+                >
                   <Form.Label>Número de Teléfono</Form.Label>
                   <Form.Control
                     type="text"
@@ -159,7 +162,7 @@ const Register = () => {
                   />
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formLoginEmail">
+                <Form.Group className="mb-3" controlId="formRegisterEmail">
                   <Form.Label>E-mail</Form.Label>
                   <Form.Control
                     type="text"
@@ -170,7 +173,7 @@ const Register = () => {
                   />
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formLoginPassword">
+                <Form.Group className="mb-3" controlId="formRegisterPassword">
                   <Form.Label>Contraseña</Form.Label>
                   <Form.Control
                     type="password"
