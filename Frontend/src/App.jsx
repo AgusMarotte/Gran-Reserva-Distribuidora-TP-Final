@@ -11,6 +11,7 @@ import Register from "./components/auth/register/Register.jsx";
 import Rewards from "./components/content/rewards/Rewards.jsx";
 import { ToastContainer, Slide } from "react-toastify";
 import "./App.css";
+import NotFound from "./components/content/notFound/NotFound.jsx";
 
 function App() {
   if ("scrollRestoration" in history) {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
       <Footer />
