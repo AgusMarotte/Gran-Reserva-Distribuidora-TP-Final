@@ -9,6 +9,7 @@ import Products from "./components/content/products/Products.jsx";
 import Login from "./components/auth/login/Login.jsx";
 import Register from "./components/auth/register/Register.jsx";
 import Rewards from "./components/content/rewards/Rewards.jsx";
+import MyOrders from "./components/content/myOreders/MyOrders.jsx";
 import { ToastContainer, Slide } from "react-toastify";
 import "./App.css";
 import NotFound from "./components/content/notFound/NotFound.jsx";
@@ -38,6 +39,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/rewards" element={<Rewards />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/myOrders" element={<MyOrders />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
