@@ -63,7 +63,7 @@ const MyOrders = () => {
           </thead>
           <tbody>
             {orders.map((order) => {
-              // ✅ Corregimos la fecha inválida
+              
               const formattedDate = order.date
                 ? new Date(order.date.split(".")[0]).toLocaleDateString("es-AR")
                 : "Sin fecha";
