@@ -1,31 +1,31 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import NavBar from "./components/ui/navbar/NavBar.jsx";
 import Footer from "./components/ui/footer/Footer.jsx";
 import Home from "./components/content/home/Home.jsx";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Terms from "./components/content/legal/terms/Terms.jsx";
 import Privacy from "./components/content/legal/privacy/Privacy.jsx";
 import Products from "./components/content/products/Products.jsx";
 import Login from "./components/content/login/Login.jsx";
-
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }
 
   return (
-    <Router>
+    <Router basename="/Gran-Reserva-Distribuidora-TP-Final">
       <NavBar />
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-         {/* <Route path="/register" element={<Register />} /> */}
+          {/* <Route path="/register" element={<Register />} /> */}
           <Route path="/products" element={<Products />} />
           <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} /> 
+          <Route path="/privacy" element={<Privacy />} />
         </Routes>
       </div>
       <Footer />

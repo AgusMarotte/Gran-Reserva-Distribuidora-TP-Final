@@ -72,7 +72,13 @@ const Footer = () => {
           <Link to="/terms" className="footer-link">
             Términos y Condiciones
           </Link>
-          <Link to="/contact" className="footer-link">
+          <Link
+            to="javascript:void(0)"
+            onClick={() =>
+              (window.location = "mailto:contacto@granreserva.com")
+            }
+            className="footer-link"
+          >
             <EnvelopeAtFill />
             Contactanos
           </Link>
