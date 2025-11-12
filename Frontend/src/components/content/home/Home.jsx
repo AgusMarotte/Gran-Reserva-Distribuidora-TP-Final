@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "./Home.css";
-import card1 from "../../../assets/images/card1.png";
-import card2 from "../../../assets/images/card2.png";
-import card3 from "../../../assets/images/card3.png";
+import image1 from "../../../assets/images/wineglass.png";
+import image2 from "../../../assets/images/bottlerack.png";
+import image3 from "../../../assets/images/cellar.png";
 
 const Home = () => {
   useEffect(() => {
@@ -40,7 +40,7 @@ const Home = () => {
   return (
     <div className="scroll-container">
       <section className="home-section">
-        <img src={card1} alt="Imagen 1" className="home-image" />
+        <img src={image1} alt="Imagen 1" className="home-image" />
         <Container className="home-text text-center text-white">
           <Row className="justify-content-center align-items-center">
             <Col md={10} lg={8}>
@@ -58,7 +58,7 @@ const Home = () => {
       </section>
 
       <section className="home-section">
-        <img src={card2} alt="Imagen 2" className="home-image" />
+        <img src={image2} alt="Imagen 2" className="home-image" />
         <Container className="home-text text-center text-white">
           <Row className="justify-content-center align-items-center">
             <Col md={10} lg={8}>
@@ -75,7 +75,7 @@ const Home = () => {
       </section>
 
       <section className="home-section">
-        <img src={card3} alt="Imagen 3" className="home-image" />
+        <img src={image3} alt="Imagen 3" className="home-image" />
         <Container className="home-text text-center text-white">
           <Row className="justify-content-center align-items-center">
             <Col md={10} lg={8}>

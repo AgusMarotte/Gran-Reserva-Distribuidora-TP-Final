@@ -79,7 +79,7 @@ namespace Application.Services
             var existingUser = await _userRepository.GetActiveByEmailAsync(userdto.Email);
             if (existingUser != null)
             {
-                throw new ValidationException("El email ya está en uso.");
+                throw new ValidationException("El e-mail ya está en uso.");
             }
 
             bool anyUserExists = await _userRepository.AnyUserExistsAsync();
@@ -128,7 +128,7 @@ namespace Application.Services
             var existingUser = await _userRepository.GetActiveByEmailAsync(userdto.Email);
             if (existingUser != null)
             {
-                throw new ValidationException("El email ya está en uso.");
+                throw new ValidationException("El e-mail ya está en uso.");
             }
 
             var hashedPassword = ComputeSha256Hash(userdto.Password);

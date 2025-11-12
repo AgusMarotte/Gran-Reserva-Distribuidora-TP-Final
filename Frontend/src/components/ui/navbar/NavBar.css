@@ -7,14 +7,17 @@
   align-items: center;
 }
 
-.text,
-.text:active {
-  font-family: "Inter", sans-serif;
+.navlink,
+.navlink:active {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+  gap: 0.35rem;
   font-weight: bold;
   color: white !important;
 }
 
-.text:hover {
+.navlink:hover {
   text-decoration: none;
   color: rgb(168, 168, 168) !important;
 }

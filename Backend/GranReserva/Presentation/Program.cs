@@ -153,7 +153,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

@@ -29,6 +29,7 @@ body {
   object-fit: cover;
   filter: blur(5px);
   mask: radial-gradient(ellipse at center, white 15%, transparent 65%);
+  -webkit-mask: radial-gradient(ellipse at center, white 15%, transparent 65%);
   z-index: 1;
 }
 

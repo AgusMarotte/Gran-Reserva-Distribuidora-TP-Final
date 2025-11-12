@@ -1,0 +1,39 @@
+.form {
+  margin-top: 55px;
+  margin-bottom: 45px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  backdrop-filter: blur(3.5px);
+  -webkit-backdrop-filter: blur(3.5px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-text,
+.form-text a {
+  color: white;
+}
+
+.form-text a:hover {
+  color: #c0c0c0;
+}
+
+.form-title {
+  text-align: center;
+}
+
+.login-button {
+  background-color: black;
+  border: none;
+}
+
+.login-button:hover,
+.login-button:active,
+.login-button:disabled {
+  background-color: rgb(30, 30, 30) !important;
+  border: none;
+}

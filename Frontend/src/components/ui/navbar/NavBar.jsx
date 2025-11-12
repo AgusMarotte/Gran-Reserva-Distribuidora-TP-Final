@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
+import { PersonCircle } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import logoSrc from "/icon-w.svg";
 import "./NavBar.css";
@@ -22,18 +23,19 @@ const NavBar = () => {
       className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}
     >
       <Container fluid className="d-flex justify-content-center">
-        <Navbar.Brand as={Link} to="/" className="brand text">
+        <Navbar.Brand as={Link} to="/" className="brand navlink">
           Gran Reserva
           <img src={logoSrc} width="50" height="50" alt="Gran Reserva Logo" />
         </Navbar.Brand>
         <Nav>
-          <Nav.Link className="text" to="/">
-            Sucursales
-          </Nav.Link>
-          <Nav.Link className="text" href="#about-us">
+          <Nav.Link as={Link} to="/about-us" className="navlink">
             Sobre Nosotros
           </Nav.Link>
-          <Nav.Link as={Link} to="/login" className="text">
+          <Nav.Link as={Link} to="/products" className="navlink">
+            Productos
+          </Nav.Link>
+          <Nav.Link as={Link} to="/login" className="navlink">
+            <PersonCircle />
             Iniciar Sesión
           </Nav.Link>
         </Nav>
