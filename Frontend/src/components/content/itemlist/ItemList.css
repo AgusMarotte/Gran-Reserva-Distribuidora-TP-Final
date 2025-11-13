@@ -1,4 +1,4 @@
-.card {
+.item-card {
   color: white;
   text-align: center;
   background: linear-gradient(
@@ -13,20 +13,20 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 18rem;
 }
-.card .card-img-top {
+.item-card .card-img-top {
   background-color: white;
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 }
 
-.card-button {
+.item-card-button {
   background-color: black;
   border: none;
 }
 
-.card-button:hover,
-.card-button:active,
-.card-button:disabled {
+.item-card-button:hover,
+.item-card-button:active,
+.item-card-button:disabled {
   background-color: rgb(30, 30, 30) !important;
   border: none;
 }

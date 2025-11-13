@@ -132,7 +132,7 @@ const Login = ({ onLogin }) => {
     <Container className="mt-5 form-container">
       <Row className="justify-content-center">
         <Col md={6} lg={4}>
-          <Card className="form mx-auto">
+          <Card className="form">
             <Card.Body className="form-text">
               <Card.Title as="h2" className="form-title mb-4">
                 Iniciar Sesión

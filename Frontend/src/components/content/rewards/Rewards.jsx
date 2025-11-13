@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ItemList from "../itemlist/ItemList";
 import { toast } from "react-toastify";
 import { Spinner } from "react-bootstrap";
 import "./Rewards.css";
 
-const Rewards = () => {
+const Rewards = ({ userPoints, onPointsUpdate }) => {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     document.body.classList.add("rewards-background");
@@ -17,7 +19,7 @@ const Rewards = () => {
 
   useEffect(() => {
     fetch(
-      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/reward"
+      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Reward"
     )
       .then((res) => {
         if (!res.ok) {
@@ -37,22 +39,63 @@ const Rewards = () => {
       });
   }, []);
 
-  const handleAddToCart = (rewards) => {
-    if (rewards.stock <= 0) {
+  const redeemReward = async (reward) => {
+    if (!token) {
+      toast.error("Necesitas iniciar sesión para canjear.");
+      return;
+    }
+
+    if (Number(userPoints) < reward.pointsRequired) {
+      toast.warn("No tienes puntos suficientes.");
+      return;
+    }
+
+    if (reward.stock <= 0) {
       toast.warn("Sin stock disponible");
       return;
     }
 
-    setRewards((prevRewards) =>
-      prevRewards.map((p) =>
-        r.id === rewards.id ? { ...r, stock: r.stock - 1 } : p
-      )
-    );
+    setLoading(true);
 
-    toast.success(`${rewards.name} agregado al carrito`);
+    try {
+      const response = await fetch(
+        "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/RewardExchange",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ rewardId: reward.id }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "No se pudo realizar el canje.");
+      }
+
+      const exchangeData = await response.json();
+
+      if (exchangeData.clientCurrentPoints !== undefined) {
+        onPointsUpdate(exchangeData.clientCurrentPoints);
+      }
+
+      setRewards((prevRewards) =>
+        prevRewards.map((r) =>
+          r.id === reward.id ? { ...r, stock: r.stock - 1 } : r
+        )
+      );
+
+      toast.success("Canje realizado con éxito");
+    } catch (err) {
+      toast.error(err.message || "Error al canjear.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading) {
+  if (loading && rewards.length === 0) {
     return (
       <div className="page-center">
         <Spinner animation="border" variant="light" />
@@ -64,10 +107,11 @@ const Rewards = () => {
   return (
     <div className="container mt-4" style={{ color: "white" }}>
       <h3 className="mb-3 text-center">Recompensas Disponibles</h3>
+
       <ItemList
         items={rewards}
-        onAction={handleAddToCart}
-        actionText="Agregar al Carrito"
+        onAction={redeemReward}
+        actionText="Canjear"
         emptyListMessage="No hay recompensas disponibles en este momento."
       />
     </div>

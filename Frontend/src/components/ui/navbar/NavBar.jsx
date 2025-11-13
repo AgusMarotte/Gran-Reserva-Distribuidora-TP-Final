@@ -58,21 +58,19 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
             Productos
           </Nav.Link>
           {token && (
-            <Nav.Link
-              as={Link}
-              to="/rewards"
-              className={rewardsActive ? "underlined navlink" : "navlink"}
-            >
+            <Nav.Link as={Link} to="/rewards" className="navlink">
               <Coin className="mx-1" />
-              <CountUp
-                from={0}
-                to={userPoints || 0}
-                separator=","
-                direction="up"
-                duration={1}
-                className="count-up-text"
-              />
-              Puntos
+              <span className={rewardsActive ? "underlined" : ""}>
+                <CountUp
+                  from={0}
+                  to={userPoints || 0}
+                  separator=","
+                  direction="up"
+                  duration={1}
+                  className="count-up-text"
+                />
+                {" Puntos"}
+              </span>
             </Nav.Link>
           )}
           {token && (

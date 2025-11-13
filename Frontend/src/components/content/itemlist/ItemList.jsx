@@ -25,7 +25,7 @@ const ItemList = ({ items, onAction, actionText, emptyListMessage }) => {
 
         return (
           <Col key={id} xs={12} sm={6} lg={4} xl={3} className="mb-4">
-            <Card className="h-100 text-center shadow card">
+            <Card className="h-100 text-center shadow item-card">
               <Card.Img
                 variant="top"
                 src={imageUrl}
@@ -58,7 +58,7 @@ const ItemList = ({ items, onAction, actionText, emptyListMessage }) => {
                     variant={actionText === "Canjear" ? "danger" : "primary"}
                     onClick={() => onAction(item)}
                     disabled={isOutOfStock}
-                    className="card-button"
+                    className="item-card-button"
                   >
                     {isOutOfStock ? "Sin Stock" : actionText}
                   </Button>

@@ -20,6 +20,8 @@ namespace Application.Models
         {
             if (order == null) return null;
 
+            long pointsAwarded = (long)Math.Ceiling(order.Total * 0.01);
+
             return new OrderDTO
             {
                 Id = order.Id,
@@ -29,6 +31,9 @@ namespace Application.Models
                 ClientId = order.ClientId,
                 ClientName = order.Client != null ? $"{order.Client.Name} {order.Client.LastName}" : "Cliente no encontrado",
                 OrderDetails = order.OrderDetails?.Select(OrderDetailDTO.Create).OfType<OrderDetailDTO>().ToList() ?? new List<OrderDetailDTO>()
+
+                PointsEarned = pointsAwarded
+
             };
         }
 

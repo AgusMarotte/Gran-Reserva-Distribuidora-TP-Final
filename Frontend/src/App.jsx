@@ -10,9 +10,10 @@ import Products from "./components/content/products/Products.jsx";
 import Login from "./components/auth/login/Login.jsx";
 import Register from "./components/auth/register/Register.jsx";
 import Rewards from "./components/content/rewards/Rewards.jsx";
-import MyOrders from "./components/content/myOreders/MyOrders.jsx";
+import MyOrders from "./components/content/myorders/MyOrders.jsx";
 import NotFound from "./components/content/notfound/NotFound.jsx";
 import Protected from "./components/auth/protected/Protected.jsx";
+import Public from "./components/auth/public/Public.jsx";
 import "./App.css";
 
 function App() {
@@ -21,19 +22,24 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [userPoints, setUserPoints] = useState(0);
 
+  const handlePointsUpdate = (newPoints) => {
+    const pointsNumber = Number(newPoints) || 0;
+    setUserPoints(pointsNumber);
+    localStorage.setItem("points", pointsNumber.toString());
+  };
+
   const handleLogin = (token, isAdminFlag, points) => {
     setToken(token);
     setIsAdmin(isAdminFlag);
-    setUserPoints(points);
+    handlePointsUpdate(points);
     localStorage.setItem("token", token);
     localStorage.setItem("isAdmin", isAdminFlag);
-    localStorage.setItem("points", points);
   };
 
   const handleLogout = () => {
     setToken(null);
     setIsAdmin(false);
-    setUserPoints(0);
+    handlePointsUpdate(0);
     localStorage.removeItem("token");
     localStorage.removeItem("isAdmin");
     localStorage.removeItem("points");
@@ -89,9 +95,31 @@ function App() {
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/rewards" element={<Rewards />} />
+          <Route
+            path="/login"
+            element={
+              <Public isSignedIn={token} isLoading={isLoading}>
+                <Login onLogin={handleLogin} />
+              </Public>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Public isSignedIn={token} isLoading={isLoading}>
+                <Register />
+              </Public>
+            }
+          />
+          <Route
+            path="/rewards"
+            element={
+              <Rewards
+                userPoints={userPoints}
+                onPointsUpdate={handlePointsUpdate}
+              />
+            }
+          />
           <Route path="/products" element={<Products />} />
           <Route
             path="/myOrders"
