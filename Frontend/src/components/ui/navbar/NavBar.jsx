@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navbar, Container, Nav, Badge, Dropdown } from "react-bootstrap";
-import { PersonCircle, BoxArrowRight, Coin, Cart } from "react-bootstrap-icons";
+import {
+  PersonCircle,
+  BoxArrowRight,
+  Coin,
+  Cart,
+  Gear,
+} from "react-bootstrap-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "/icon-w.svg";
 import CountUp from "../countup/CountUp.jsx";
@@ -25,7 +31,8 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
   const rewardsActive = location.pathname === "/rewards";
   const myOrdersActive = location.pathname === "/my-orders";
   const loginActive = location.pathname === "/login";
-  const myExchangesActive = location.pathname === "/myExchanges";
+  const myExchangesActive = location.pathname === "/my-exchanges";
+  const settingsActive = location.pathname === "/settings";
 
   const calculateWidthInCh = (digits) => {
     if (!digits || digits < 1) digits = 1;
@@ -81,8 +88,19 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
             >
               Mis Canjes
             </Dropdown.Item>
+            <Dropdown.Divider />
           </>
         )}
+
+        <Dropdown.Item
+          as={Link}
+          to="/settings"
+          active={settingsActive}
+          className="dropdown-link"
+        >
+          <Gear className="me-1" />
+          Configuración
+        </Dropdown.Item>
 
         <Dropdown.Divider />
 
@@ -120,6 +138,7 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
           >
             Productos
           </Nav.Link>
+
           {token && !isAdmin && (
             <Nav.Link as={Link} to="/rewards" className="navlink">
               <Coin className="mx-1" />

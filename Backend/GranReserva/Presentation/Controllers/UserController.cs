@@ -78,6 +78,21 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
         }
 
+        [HttpGet("profile")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUserProfile()
+        {
+            var userIdClaim = User.FindFirst("sub")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                throw new InvalidCredentialsException("No se pudo identificar al usuario desde el token.");
+            }
+
+            var userProfile = await _userService.GetCurrentUserProfileAsync(userId);
+
+            return Ok(userProfile);
+        }
+
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateCurrentUser([FromBody] UpdateUserDTO userdto)

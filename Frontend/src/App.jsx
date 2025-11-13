@@ -16,6 +16,7 @@ import Protected from "./components/auth/protected/Protected.jsx";
 import Public from "./components/auth/public/Public.jsx";
 import MyRewardExchanges from "./components/content/myrewardexchanges/MyRewardExchanges.jsx";
 import Cart from "./components/content/cart/Cart.jsx";
+import Settings from "./components/content/settings/Settings.jsx";
 import "./App.css";
 
 function App() {
@@ -30,38 +31,72 @@ function App() {
     localStorage.setItem("points", pointsNumber.toString());
   };
 
-  const handleLogin = (token, isAdminFlag, points) => {
-    setToken(token);
-    setIsAdmin(isAdminFlag);
-    handlePointsUpdate(points);
-    localStorage.setItem("token", token);
-    localStorage.setItem("isAdmin", isAdminFlag);
+  const handleLogin = (newToken, newIsAdmin) => {
+    setToken(newToken);
+    setIsAdmin(newIsAdmin);
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("isAdmin", newIsAdmin);
+    if (!newIsAdmin) {
+      fetch(
+        "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/user/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          handlePointsUpdate(data.points);
+        })
+        .catch((error) => console.error("Error fetching user points:", error));
+    }
   };
 
   const handleLogout = () => {
     setToken(null);
     setIsAdmin(false);
-    handlePointsUpdate(0);
+    setUserPoints(0);
     localStorage.removeItem("token");
     localStorage.removeItem("isAdmin");
     localStorage.removeItem("points");
+    localStorage.removeItem("shoppingCart");
+    toast.info("Sesión cerrada correctamente.");
   };
 
   useEffect(() => {
-    try {
-      const savedToken = localStorage.getItem("token");
-      if (savedToken) {
-        setToken(savedToken);
-        const savedIsAdmin = localStorage.getItem("isAdmin") === "true";
-        setIsAdmin(savedIsAdmin);
-        const savedPoints = localStorage.getItem("points");
-        setUserPoints(Number(savedPoints) || 0);
+    const checkAuth = async () => {
+      const storedToken = localStorage.getItem("token");
+      const storedIsAdmin = localStorage.getItem("isAdmin") === "true";
+      const storedPoints = localStorage.getItem("points");
+
+      setToken(storedToken);
+      setIsAdmin(storedIsAdmin);
+      setUserPoints(Number(storedPoints) || 0);
+
+      if (storedToken && !storedIsAdmin) {
+        try {
+          const response = await fetch(
+            "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/user/profile",
+            {
+              headers: {
+                Authorization: `Bearer ${storedToken}`,
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            handlePointsUpdate(data.points);
+          } else {
+            console.error("Failed to fetch user points");
+          }
+        } catch (error) {
+          console.error("Error fetching user points:", error);
+        }
       }
-    } catch (error) {
-      console.error("Error al recuperar datos de localStorage", error);
-    } finally {
       setIsLoading(false);
-    }
+    };
+    checkAuth();
   }, []);
 
   if ("scrollRestoration" in history) {
@@ -140,6 +175,15 @@ function App() {
                 </Protected>
               }
             />
+            <Route
+              path="/settings"
+              element={
+                <Protected isSignedIn={token} isLoading={isLoading}>
+                  <Settings onLogin={handleLogin} />
+                </Protected>
+              }
+            />
+
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />

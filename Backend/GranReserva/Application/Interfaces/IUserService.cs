@@ -17,5 +17,6 @@ namespace Application.Interfaces
         Task<UserDTO> UpdateClientPointsAsync(int clientId, UpdatePointsDTO pointsdto);
         Task<bool> ChangePasswordAsync(int userId, ChangePasswordDTO changePasswordDTO);
         Task<long> GetUserPointsAsync(int userId);
+        Task<UserDTO> GetCurrentUserProfileAsync(int userId);
     }
 }

@@ -44,6 +44,16 @@ namespace Application.Services
             return UserDTO.Create(user)!;
         }
 
+        public async Task<UserDTO> GetCurrentUserProfileAsync(int userId)
+        {
+            var user = await _userRepository.GetActiveByIdAsync(userId);
+            if (user == null)
+            {
+                throw new NotFoundException("Usuario no encontrado.");
+            }
+            return UserDTO.Create(user)!;
+        }
+
         public async Task<List<UserDTO>> GetAllUsersAsync(bool includesoftdeleted = false)
         {
             var users = includesoftdeleted
