@@ -19,19 +19,24 @@ function App() {
   const [token, setToken] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userPoints, setUserPoints] = useState(0);
 
-  const handleLogin = (token, isAdminFlag) => {
+  const handleLogin = (token, isAdminFlag, points) => {
     setToken(token);
     setIsAdmin(isAdminFlag);
+    setUserPoints(points);
     localStorage.setItem("token", token);
     localStorage.setItem("isAdmin", isAdminFlag);
+    localStorage.setItem("points", points);
   };
 
   const handleLogout = () => {
     setToken(null);
     setIsAdmin(false);
+    setUserPoints(0);
     localStorage.removeItem("token");
     localStorage.removeItem("isAdmin");
+    localStorage.removeItem("points");
   };
 
   useEffect(() => {
@@ -41,6 +46,8 @@ function App() {
         setToken(savedToken);
         const savedIsAdmin = localStorage.getItem("isAdmin") === "true";
         setIsAdmin(savedIsAdmin);
+        const savedPoints = localStorage.getItem("points");
+        setUserPoints(Number(savedPoints) || 0);
       }
     } catch (error) {
       console.error("Error al recuperar datos de localStorage", error);
@@ -68,7 +75,7 @@ function App() {
         token={token}
         isAdmin={isAdmin}
         onLogout={handleLogout}
-        onLogin={handleLogin}
+        userPoints={userPoints}
       />
       <ToastContainer
         position="bottom-right"

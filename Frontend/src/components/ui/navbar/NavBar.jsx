@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
-import { PersonCircle, BoxArrowRight } from "react-bootstrap-icons";
+import { PersonCircle, BoxArrowRight, Coin } from "react-bootstrap-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "/icon-w.svg";
+import CountUp from "../countup/CountUp.jsx";
 import "./NavBar.css";
 
-const NavBar = ({ token, isAdmin, onLogout }) => {
+const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
   const [scrolled, setScrolled] = useState(false);
 
   const navigate = useNavigate();
@@ -62,7 +63,16 @@ const NavBar = ({ token, isAdmin, onLogout }) => {
               to="/rewards"
               className={rewardsActive ? "underlined navlink" : "navlink"}
             >
-              Recompensas
+              <Coin className="mx-1" />
+              <CountUp
+                from={0}
+                to={userPoints || 0}
+                separator=","
+                direction="up"
+                duration={1}
+                className="count-up-text"
+              />
+              Puntos
             </Nav.Link>
           )}
           {token && (

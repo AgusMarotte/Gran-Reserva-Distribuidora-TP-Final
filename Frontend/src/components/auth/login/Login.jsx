@@ -93,9 +93,31 @@ const Login = ({ onLogin }) => {
       } else {
         toast.success("Login exitoso");
         const payload = parseJwt(token);
+        console.log("Payload del JWT (revisa el rol):", payload);
         const userRole = payload ? payload.role : "User";
         const isAdmin = userRole === "Admin" || userRole === "SuperAdmin";
-        onLogin(token, isAdmin);
+
+        let points = 0;
+        if (userRole === "User") {
+          try {
+            const pointsResponse = await fetch(
+              "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/User/points",
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            if (pointsResponse.ok) {
+              const pointsData = await pointsResponse.json();
+              console.log("Respuesta de la API de puntos:", pointsData);
+              points = pointsData.points;
+            }
+          } catch (pointsError) {
+            console.error("Error fetching user points:", pointsError);
+          }
+        }
+        console.log("Puntos que se enviarán a App.jsx:", points);
+        onLogin(token, isAdmin, points);
         navigate("/");
       }
     } catch (err) {
@@ -110,7 +132,7 @@ const Login = ({ onLogin }) => {
     <Container className="mt-5 form-container">
       <Row className="justify-content-center">
         <Col md={6} lg={4}>
-          <Card className="form">
+          <Card className="form mx-auto">
             <Card.Body className="form-text">
               <Card.Title as="h2" className="form-title mb-4">
                 Iniciar Sesión

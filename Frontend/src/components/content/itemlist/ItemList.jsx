@@ -46,8 +46,7 @@ const ItemList = ({ items, onAction, actionText, emptyListMessage }) => {
                   )}
                   {pointsRequired !== undefined && (
                     <Card.Text className="d-flex justify-content-center align-items-center">
-                      <b>Puntos:</b> <Coin />
-                      {pointsRequired}
+                      <b>Puntos:</b> <Coin className="mx-1" /> {pointsRequired}
                     </Card.Text>
                   )}
 

@@ -1,110 +1,77 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import ItemList from "../itemlist/ItemList";
+import { toast } from "react-toastify";
+import { Spinner } from "react-bootstrap";
+import "./Rewards.css";
 
-const API_BASE = "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api";
-
-export default function RewardsUser() {
+const Rewards = () => {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
-  const userPoints = localStorage.getItem("points");
-
   useEffect(() => {
-    fetch(`${API_BASE}/Reward`)
-      .then(res => res.json())
-      .then(data => {
-        const repeated = Array(6).fill(data).flat();
-        setRewards(repeated);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    document.body.classList.add("rewards-background");
+    return () => {
+      document.body.classList.remove("rewards-background");
+    };
   }, []);
 
-  const redeemReward = async (rewardId, pointsRequired) => {
-    if (!token) {
-      alert("Necesitas iniciar sesión para canjear.");
-      return;
-    }
-
-    if (Number(userPoints) < pointsRequired) {
-      alert("No tienes puntos suficientes.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE}/RewardExchange`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ rewardId })
+  useEffect(() => {
+    fetch(
+      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/reward"
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("No se pudieron cargar las recompensas");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setRewards(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching rewards:", err);
+        toast.error("Error al cargar las recompensas.");
+      })
+      .finally(() => {
+        setLoading(false);
       });
+  }, []);
 
-      if (!response.ok) {
-        alert("No se pudo realizar el canje.");
-        return;
-      }
-
-      alert("Canje realizado con éxito");
-      window.location.reload();
-
-    } catch (error) {
-      alert("Error al canjear.");
+  const handleAddToCart = (rewards) => {
+    if (rewards.stock <= 0) {
+      toast.warn("Sin stock disponible");
+      return;
     }
+
+    setRewards((prevRewards) =>
+      prevRewards.map((p) =>
+        r.id === rewards.id ? { ...r, stock: r.stock - 1 } : p
+      )
+    );
+
+    toast.success(`${rewards.name} agregado al carrito`);
   };
 
-  if (loading) return <p style={{ color: "white" }}>Cargando recompensas...</p>;
+  if (loading) {
+    return (
+      <div className="page-center">
+        <Spinner animation="border" variant="light" />
+        Cargando Listado de Recompensas
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: "20px", color: "white" }}>
-      <h1>Recompensas Disponibles</h1>
-      <h3>Puntos disponibles: <span style={{ color: "#ffd700" }}>💰 {userPoints ?? 0}</span></h3>
-
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-        gap: "20px",
-        marginTop: "20px"
-      }}>
-
-        {rewards.map((reward, index) => (
-          <div key={index} style={{
-            background: "#111",
-            borderRadius: "10px",
-            padding: "15px",
-            textAlign: "center",
-            border: "1px solid #333"
-          }}>
-            <img
-              src={reward.imageUrl}
-              alt={reward.name}
-              style={{ width: "100%", height: "180px", objectFit: "contain" }}
-            />
-
-            <h2>{reward.name}</h2>
-            <p style={{ opacity: 0.8 }}>{reward.description}</p>
-
-            <p><b>Puntos:</b> <span style={{ color: "#ffd700" }}>💰 {reward.pointsRequired}</span></p>
-            <p><b>Stock:</b> {reward.stock}</p>
-
-            <button
-              onClick={() => redeemReward(reward.id, reward.pointsRequired)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                background: "red",
-                border: "none",
-                borderRadius: "5px",
-                marginTop: "10px",
-                cursor: "pointer"
-              }}
-            >
-              Canjear
-            </button>
-          </div>
-        ))}
-      </div>
+    <div className="container mt-4" style={{ color: "white" }}>
+      <h3 className="mb-3 text-center">Recompensas Disponibles</h3>
+      <ItemList
+        items={rewards}
+        onAction={handleAddToCart}
+        actionText="Agregar al Carrito"
+        emptyListMessage="No hay recompensas disponibles en este momento."
+      />
     </div>
   );
-}
+};
+
+export default Rewards;

@@ -74,7 +74,7 @@ namespace Infrastructure.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, validatedUser.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, validatedUser.Id.ToString()),
-                new Claim(ClaimTypes.Role, validatedUser.Role.ToString())
+                new Claim("role", validatedUser.Role.ToString())
             };
 
             var jwtSecurityToken = new JwtSecurityToken(
