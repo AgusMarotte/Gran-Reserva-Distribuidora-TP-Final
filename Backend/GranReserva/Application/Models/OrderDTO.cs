@@ -30,8 +30,7 @@ namespace Application.Models
                 State = order.State,
                 ClientId = order.ClientId,
                 ClientName = order.Client != null ? $"{order.Client.Name} {order.Client.LastName}" : "Cliente no encontrado",
-                OrderDetails = order.OrderDetails?.Select(OrderDetailDTO.Create).OfType<OrderDetailDTO>().ToList() ?? new List<OrderDetailDTO>()
-
+                OrderDetails = order.OrderDetails?.Select(OrderDetailDTO.Create).OfType<OrderDetailDTO>().ToList() ?? new List<OrderDetailDTO>(),
                 PointsEarned = pointsAwarded
 
             };

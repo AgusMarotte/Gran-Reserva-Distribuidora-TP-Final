@@ -6,7 +6,7 @@ import logoSrc from "/icon-w.svg";
 import CountUp from "../countup/CountUp.jsx";
 import "./NavBar.css";
 
-const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
+const NavBar = ({ token, isAdmin, onLogout, userPoints, maxPointsDigits }) => {
   const [scrolled, setScrolled] = useState(false);
 
   const navigate = useNavigate();
@@ -68,6 +68,7 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
                   direction="up"
                   duration={1}
                   className="count-up-text"
+                  minIntegerDigits={maxPointsDigits}
                 />
                 {" Puntos"}
               </span>

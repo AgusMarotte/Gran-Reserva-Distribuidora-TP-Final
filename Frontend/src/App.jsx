@@ -21,6 +21,7 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userPoints, setUserPoints] = useState(0);
+  const [maxRewardDigits, setMaxRewardDigits] = useState(1);
 
   const handlePointsUpdate = (newPoints) => {
     const pointsNumber = Number(newPoints) || 0;
@@ -62,6 +63,30 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    fetch(
+      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Reward"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.length > 0) {
+          const maxPoints = data.reduce(
+            (max, reward) => Math.max(max, reward.pointsRequired),
+            0
+          );
+          const digits = maxPoints.toString().length;
+          setMaxRewardDigits(digits > 0 ? digits : 1);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching max reward points:", err);
+        setMaxRewardDigits(6);
+      });
+  }, []);
+
+  const userPointsDigits = (userPoints || 0).toString().length;
+  const minDigitsToShow = Math.max(4, userPointsDigits, maxRewardDigits);
+
   if ("scrollRestoration" in history) {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
@@ -82,6 +107,7 @@ function App() {
         isAdmin={isAdmin}
         onLogout={handleLogout}
         userPoints={userPoints}
+        maxPointsDigits={minDigitsToShow}
       />
       <ToastContainer
         position="bottom-right"

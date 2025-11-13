@@ -12,6 +12,7 @@ const CountUp = ({
   className = "",
   startWhen = true,
   separator = "",
+  minIntegerDigits = 1,
   onStart,
   onEnd,
 }) => {
@@ -52,6 +53,7 @@ const CountUp = ({
         useGrouping: !!separator,
         minimumFractionDigits: hasDecimals ? maxDecimals : 0,
         maximumFractionDigits: hasDecimals ? maxDecimals : 0,
+        minimumIntegerDigits: minIntegerDigits,
       };
 
       const formattedNumber = Intl.NumberFormat("en-US", options).format(
@@ -62,7 +64,7 @@ const CountUp = ({
         ? formattedNumber.replace(/,/g, separator)
         : formattedNumber;
     },
-    [maxDecimals, separator]
+    [maxDecimals, separator, minIntegerDigits]
   );
 
   useEffect(() => {
