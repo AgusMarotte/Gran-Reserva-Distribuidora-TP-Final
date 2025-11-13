@@ -1,0 +1,21 @@
+.orders-client-name {
+  color: rgba(132, 52, 54);
+}
+
+.orders-btn {
+  background-color: rgba(132, 52, 54) !important;
+  border: none !important;
+}
+
+.orders-btn:hover {
+  background-color: rgba(102, 32, 34) !important;
+}
+
+.orders-input {
+  color: rgba(132, 52, 54);
+  font-weight: 500;
+}
+
+.orders-input::placeholder {
+  color: rgba(132, 52, 54, 0.6);
+}

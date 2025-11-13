@@ -199,7 +199,7 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
                       minIntegerDigits={maxPointsDigits}
                       style={countUpStyle}
                     />
-                    {" Recompensas"}
+                    {isAdmin ? " Recompensas" : " Puntos"}
                   </span>
                 </Nav.Link>
               )}
