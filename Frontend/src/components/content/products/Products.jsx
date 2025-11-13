@@ -1,12 +1,24 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import ItemList from "../itemlist/ItemList";
+import ItemModal from "../itemmodal/ItemModal";
 import { toast } from "react-toastify";
-import { Spinner, Form, Row, Col, Dropdown } from "react-bootstrap";
+import {
+  Spinner,
+  Form,
+  Row,
+  Col,
+  Dropdown,
+  ButtonGroup,
+  ToggleButton,
+} from "react-bootstrap";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
 import { useCart } from "../cart/Cart.jsx";
+import { useNavigate } from "react-router-dom";
 import "./Products.css";
 
 const productTypes = ["Tinto", "Blanco", "Rosado", "Espumante"];
+const API_PRODUCT_URL =
+  "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Product";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -18,41 +30,82 @@ const Products = () => {
     direction: "asc",
   });
 
+  const [viewMode, setViewMode] = useState("active"); 
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState("edit");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   useEffect(() => {
     document.body.classList.add("products-background");
-    return () => {
-      document.body.classList.remove("products-background");
-    };
+    return () => document.body.classList.remove("products-background");
   }, []);
+
+  const buildBaseUrl = (forAll = false) => {
+    let url = API_PRODUCT_URL;
+    if (searchTerm) {
+      url = `${API_PRODUCT_URL}/search?name=${encodeURIComponent(searchTerm)}`;
+    } else if (selectedType) {
+      url = `${API_PRODUCT_URL}/search-by-type?type=${encodeURIComponent(
+        selectedType
+      )}`;
+    }
+
+    const param = `includesoftdeleted=${forAll ? "true" : "false"}`;
+    url = url.includes("?") ? `${url}&${param}` : `${url}?${param}`;
+    return url;
+  };
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
-    let url =
-      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/product";
-
-    if (searchTerm) {
-      url = `${url}/search?name=${encodeURIComponent(searchTerm)}`;
-    } else if (selectedType) {
-      url = `${url}/search-by-type?type=${encodeURIComponent(selectedType)}`;
-    }
-
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("No se pudieron cargar los productos");
+      if (isAdmin) {
+        const [activeResp, allResp] = await Promise.all([
+          fetch(`${API_PRODUCT_URL}?includesoftdeleted=false`),
+          fetch(`${API_PRODUCT_URL}?includesoftdeleted=true`),
+        ]);
+
+        if (!activeResp.ok || !allResp.ok)
+          throw new Error("Error al obtener productos");
+
+        const activeData = await activeResp.json();
+        const allData = await allResp.json();
+
+        const activeIds = new Set(activeData.map((p) => p.id));
+        let merged = allData.map((p) => ({
+          ...p,
+          isDeleted: !activeIds.has(p.id),
+        }));
+        if (searchTerm) {
+          merged = merged.filter((p) =>
+            p.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        } else if (selectedType) {
+          merged = merged.filter((p) => p.type === selectedType);
+        }
+
+        setProducts(merged);
+        return;
       }
-      const data = await response.json();
-      setProducts(data);
+
+      const url = buildBaseUrl(false);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error("Error al cargar productos.");
+      const data = await resp.json();
+      setProducts(data.map((p) => ({ ...p, isDeleted: false })));
     } catch (err) {
-      console.error("Error fetching products:", err);
+      console.error(err);
       toast.error("Error al cargar los productos.");
       setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedType]);
+  }, [searchTerm, selectedType, isAdmin]);
 
   useEffect(() => {
     fetchProducts();
@@ -77,44 +130,42 @@ const Products = () => {
   };
 
   const sortedProducts = useMemo(() => {
-    let sortableItems = [...products];
+    let list = [...products];
+
+    if (isAdmin) {
+      if (viewMode === "active") list = list.filter((p) => !p.isDeleted);
+      else if (viewMode === "deleted") list = list.filter((p) => p.isDeleted);
+    }
+
     if (sortConfig.key) {
-      sortableItems.sort((a, b) => {
-        let aValue, bValue;
-
-        switch (sortConfig.key) {
-          case "name":
-            aValue = a.name.toLowerCase();
-            bValue = b.name.toLowerCase();
-            break;
-          case "price":
-            aValue = a.price;
-            bValue = b.price;
-            break;
-          default:
-            aValue = a[sortConfig.key];
-            bValue = b[sortConfig.key];
-        }
-
-        if (aValue < bValue) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
+      list.sort((a, b) => {
+        const aValue = a[sortConfig.key] ?? "";
+        const bValue = b[sortConfig.key] ?? "";
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
       });
     }
-    return sortableItems;
-  }, [products, sortConfig]);
+    return list;
+  }, [products, sortConfig, isAdmin, viewMode]);
 
-  const handleAddToCart = (product) => {
-    if (product.stock <= 0) {
+  const handleAction = (product) => {
+    if (isAdmin) {
+      openModal("edit", product);
+    } else if (!token) {
+      toast.info("Debes iniciar sesión para agregar productos al carrito.");
+      navigate("/login");
+    } else if (product.stock <= 0) {
       toast.warn("Sin stock disponible");
-      return;
+    } else {
+      addToCart(product, 1);
     }
+  };
 
-    addToCart(product, 1);
+  const openModal = (mode, product) => {
+    setModalMode(mode);
+    setSelectedProduct(product);
+    setShowModal(true);
   };
 
   const SortIcon = ({ fieldKey }) => {
@@ -133,8 +184,8 @@ const Products = () => {
     <div className="container mt-4" style={{ color: "white" }}>
       <h3 className="mb-3 text-center">Productos Disponibles</h3>
 
-      <Row className="mb-4">
-        <Col md={6} className="mb-3 mb-md-0">
+      <Row className="mb-4 align-items-end">
+        <Col md={isAdmin ? 3 : 6}>
           <Form.Control
             type="text"
             placeholder="Buscar por nombre..."
@@ -143,38 +194,57 @@ const Products = () => {
           />
         </Col>
 
-        <Col md={3} className="mb-3 mb-md-0">
-          <Dropdown onSelect={handleTypeSelect} className="w-100">
-            <Dropdown.Toggle
-              variant="secondary"
-              id="dropdown-filter"
-              className="w-100"
-            >
-              {currentFilterDisplay}{" "}
-              {selectedType && (
-                <span style={{ float: "right", fontWeight: "bold" }}>×</span>
-              )}
-            </Dropdown.Toggle>
+        {isAdmin && (
+          <Col md={3} className="mb-2 mb-md-0 text-center">
+            <ButtonGroup>
+              <ToggleButton
+                id="view-active"
+                type="radio"
+                variant="outline-light"
+                name="view"
+                value="active"
+                checked={viewMode === "active"}
+                onChange={() => setViewMode("active")}
+              >
+                Activos
+              </ToggleButton>
+              <ToggleButton
+                id="view-all"
+                type="radio"
+                variant="outline-light"
+                name="view"
+                value="all"
+                checked={viewMode === "all"}
+                onChange={() => setViewMode("all")}
+              >
+                Todos
+              </ToggleButton>
+              <ToggleButton
+                id="view-deleted"
+                type="radio"
+                variant="outline-light"
+                name="view"
+                value="deleted"
+                checked={viewMode === "deleted"}
+                onChange={() => setViewMode("deleted")}
+              >
+                Eliminados
+              </ToggleButton>
+            </ButtonGroup>
+          </Col>
+        )}
 
-            <Dropdown.Menu
-              data-bs-theme="dark"
-              className="wine-filter-menu"
-              style={{ minWidth: "100%", zIndex: 1050 }}
-            >
-              {selectedType && (
-                <Dropdown.Item
-                  className="filter-item"
-                  onClick={() => handleTypeSelect("")}
-                >
-                  Mostrar Todos
-                </Dropdown.Item>
-              )}
+        <Col md={3}>
+          <Dropdown onSelect={handleTypeSelect} className="w-100">
+            <Dropdown.Toggle variant="secondary" className="w-100">
+              {currentFilterDisplay}
+            </Dropdown.Toggle>
+            <Dropdown.Menu data-bs-theme="dark" style={{ minWidth: "100%" }}>
               {productTypes.map((type) => (
                 <Dropdown.Item
                   key={type}
                   eventKey={type}
                   active={selectedType === type}
-                  className="filter-item"
                 >
                   {type}
                 </Dropdown.Item>
@@ -185,30 +255,14 @@ const Products = () => {
 
         <Col md={3}>
           <Dropdown>
-            <Dropdown.Toggle
-              variant="secondary"
-              id="dropdown-sort"
-              className="w-100"
-            >
-              Ordenar por
-              <SortIcon fieldKey={sortConfig.key} />{" "}
+            <Dropdown.Toggle variant="secondary" className="w-100">
+              Ordenar por <SortIcon fieldKey={sortConfig.key} />
             </Dropdown.Toggle>
-
-            <Dropdown.Menu
-              data-bs-theme="dark"
-              className="wine-sort-menu"
-              style={{ minWidth: "100%", zIndex: 1050 }}
-            >
-              <Dropdown.Item
-                className="product-sort"
-                onClick={() => handleSort("name")}
-              >
+            <Dropdown.Menu data-bs-theme="dark">
+              <Dropdown.Item onClick={() => handleSort("name")}>
                 Nombre <SortIcon fieldKey="name" />
               </Dropdown.Item>
-              <Dropdown.Item
-                className="product-sort"
-                onClick={() => handleSort("price")}
-              >
+              <Dropdown.Item onClick={() => handleSort("price")}>
                 Precio <SortIcon fieldKey="price" />
               </Dropdown.Item>
             </Dropdown.Menu>
@@ -219,18 +273,29 @@ const Products = () => {
       {loading ? (
         <div className="page-center">
           <Spinner animation="border" variant="light" />
-          Cargando Listado de Vinos
+          <p className="mt-2">Cargando Listado de Vinos...</p>
         </div>
       ) : noProductsFound ? (
-        <p className="text-center mt-5">
-          No se encontraron productos que coincidan con los criterios.
-        </p>
+        <p className="text-center mt-5">No se encontraron productos.</p>
       ) : (
         <ItemList
           items={sortedProducts}
-          onAction={handleAddToCart}
-          actionText="Agregar al Carrito"
-          emptyListMessage="No hay productos disponibles en este momento."
+          onAction={handleAction}
+          onEdit={(p) => openModal("edit", p)}
+          onDelete={(p) => openModal("delete", p)}
+          isAdmin={isAdmin}
+          actionText={isAdmin ? "Editar" : "Agregar al Carrito"}
+          emptyListMessage="No hay productos disponibles."
+        />
+      )}
+
+      {selectedProduct && (
+        <ItemModal
+          show={showModal}
+          handleClose={() => setShowModal(false)}
+          product={selectedProduct}
+          mode={modalMode}
+          onProductAction={fetchProducts}
         />
       )}
     </div>

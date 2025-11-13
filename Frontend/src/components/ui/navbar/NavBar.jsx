@@ -34,6 +34,10 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
   const myExchangesActive = location.pathname === "/my-exchanges";
   const settingsActive = location.pathname === "/settings";
 
+  const adminUsersActive = location.pathname === "/admin/users";
+  const adminOrdersActive = location.pathname === "/admin/orders";
+  const adminExchangesActive = location.pathname === "/admin/exchanges";
+
   const calculateWidthInCh = (digits) => {
     if (!digits || digits < 1) digits = 1;
     const commas = Math.floor((digits - 1) / 3);
@@ -124,49 +128,95 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
           <img src={logoSrc} width="50" height="50" alt="Gran Reserva Logo" />
         </Navbar.Brand>
         <Nav>
-          <Nav.Link
-            as={Link}
-            to="/about-us"
-            className={aboutusActive ? "underlined navlink" : "navlink"}
-          >
-            Sobre Nosotros
-          </Nav.Link>
-          <Nav.Link
-            as={Link}
-            to="/products"
-            className={productsActive ? "underlined navlink" : "navlink"}
-          >
-            Productos
-          </Nav.Link>
+          {token && isAdmin ? (
+            <>
+              <Nav.Link
+                as={Link}
+                to="/products"
+                className={productsActive ? "underlined navlink" : "navlink"}
+              >
+                Productos
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/rewards"
+                className={rewardsActive ? "underlined navlink" : "navlink"}
+              >
+                Recompensas
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/admin/users"
+                className={adminUsersActive ? "underlined navlink" : "navlink"}
+              >
+                Usuarios
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/admin/orders"
+                className={adminOrdersActive ? "underlined navlink" : "navlink"}
+              >
+                Órdenes
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/admin/exchanges"
+                className={
+                  adminExchangesActive ? "underlined navlink" : "navlink"
+                }
+              >
+                Canjes
+              </Nav.Link>
+            </>
+          ) : (
+            <>
+              <Nav.Link
+                as={Link}
+                to="/about-us"
+                className={aboutusActive ? "underlined navlink" : "navlink"}
+              >
+                Sobre Nosotros
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/products"
+                className={productsActive ? "underlined navlink" : "navlink"}
+              >
+                Productos
+              </Nav.Link>
 
-          {token && !isAdmin && (
-            <Nav.Link as={Link} to="/rewards" className="navlink">
-              <Coin className="mx-1" />
-              <span className={rewardsActive ? "underlined" : ""}>
-                <CountUp
-                  from={0}
-                  to={userPoints || 0}
-                  separator=","
-                  direction="up"
-                  duration={1}
-                  className="count-up-text"
-                  minIntegerDigits={maxPointsDigits}
-                  style={countUpStyle}
-                />
-                {" Puntos"}
-              </span>
-            </Nav.Link>
+              {token && !isAdmin && (
+                <Nav.Link as={Link} to="/rewards" className="navlink">
+                  <Coin className="mx-1" />
+                  <span className={rewardsActive ? "underlined" : ""}>
+                    <CountUp
+                      from={0}
+                      to={userPoints || 0}
+                      separator=","
+                      direction="up"
+                      duration={1}
+                      className="count-up-text"
+                      minIntegerDigits={maxPointsDigits}
+                      style={countUpStyle}
+                    />
+                    {" Recompensas"}
+                  </span>
+                </Nav.Link>
+              )}
+            </>
           )}
 
-          <Nav.Link onClick={() => setIsCartOpen(true)} className="navlink">
-            <Cart />
-            {totalItemsCount > 0 && (
-              <Badge pill bg="danger" className="ms-1">
-                {totalItemsCount}
-              </Badge>
-            )}
-            <span className="ms-1">Carrito</span>
-          </Nav.Link>
+          {token && !isAdmin && (
+            <Nav.Link onClick={() => setIsCartOpen(true)} className="navlink">
+              <Cart />
+              {totalItemsCount > 0 && (
+                <Badge pill bg="danger" className="ms-1">
+                  {totalItemsCount}
+                </Badge>
+              )}
+              <span className="ms-1">Carrito</span>
+            </Nav.Link>
+          )}
 
           {token ? (
             <UserDropdown />

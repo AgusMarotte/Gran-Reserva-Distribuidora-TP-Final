@@ -85,6 +85,17 @@ const Settings = ({ onLogin }) => {
     e.preventDefault();
     setSaving(true);
 
+    if (!userData.name.trim()) {
+      toast.error("El Nombre no puede estar vacío.");
+      setSaving(false);
+      return;
+    }
+    if (!userData.lastName.trim()) {
+      toast.error("El Apellido no puede estar vacío.");
+      setSaving(false);
+      return;
+    }
+
     if (!validatePhoneNumber(userData.phoneNumber)) {
       toast.error("El número de teléfono debe tener 10 dígitos.");
       setSaving(false);
@@ -161,9 +172,8 @@ const Settings = ({ onLogin }) => {
       toast.success(
         "Contraseña actualizada con éxito. Inicia sesión nuevamente."
       );
-      // For security, force re-login
       setSaving(false);
-      onLogin(null, false); // Llama a onLogin con valores nulos para forzar el logout
+      onLogin(null, false);
       navigate("/login");
     } catch (err) {
       toast.error(err.message || "Error al cambiar la contraseña.");
@@ -191,7 +201,6 @@ const Settings = ({ onLogin }) => {
             </Card.Title>
 
             <Row>
-              {/* Columna de Datos Personales */}
               <Col md={6}>
                 <h5 className="mb-3">Actualizar Datos Personales</h5>
                 <Form onSubmit={handleSaveData} className="mb-4">
@@ -203,7 +212,6 @@ const Settings = ({ onLogin }) => {
                         name="name"
                         value={userData.name}
                         onChange={handleDataChange}
-                        required
                         className="bg-dark text-white border-secondary"
                       />
                     </Form.Group>
@@ -219,7 +227,6 @@ const Settings = ({ onLogin }) => {
                         name="lastName"
                         value={userData.lastName}
                         onChange={handleDataChange}
-                        required
                         className="bg-dark text-white border-secondary"
                       />
                     </Form.Group>
@@ -236,7 +243,6 @@ const Settings = ({ onLogin }) => {
                       value={userData.phoneNumber}
                       onChange={handleDataChange}
                       placeholder="341XXXXXXX"
-                      required
                       className="bg-dark text-white border-secondary"
                     />
                   </Form.Group>
@@ -248,7 +254,6 @@ const Settings = ({ onLogin }) => {
                       name="email"
                       value={userData.email}
                       onChange={handleDataChange}
-                      required
                       className="bg-dark text-white border-secondary"
                     />
                   </Form.Group>
@@ -266,7 +271,6 @@ const Settings = ({ onLogin }) => {
                 </Form>
               </Col>
 
-              {/* Columna de Cambio de Contraseña */}
               <Col md={6}>
                 <h5 className="mb-3">Cambiar Contraseña</h5>
                 <Form onSubmit={handleChangePassword}>
@@ -275,10 +279,9 @@ const Settings = ({ onLogin }) => {
                     <Form.Control
                       type="password"
                       name="currentPassword"
-                      value={passwordData.currentPassword}
                       onChange={handlePasswordChange}
-                      required
                       className="bg-dark text-white border-secondary"
+                      placeholder="••••••••"
                     />
                   </Form.Group>
 
@@ -289,11 +292,9 @@ const Settings = ({ onLogin }) => {
                     <Form.Control
                       type="password"
                       name="newPassword"
-                      value={passwordData.newPassword}
                       onChange={handlePasswordChange}
-                      required
-                      minLength="8"
                       className="bg-dark text-white border-secondary"
+                      placeholder="••••••••"
                     />
                   </Form.Group>
 
@@ -309,7 +310,7 @@ const Settings = ({ onLogin }) => {
                   </div>
                 </Form>
                 <p className="text-secondary mt-3">
-                  *Al cambiar tu contraseña, deberás iniciar sesión nuevamente.
+                  Al cambiar tu contraseña, deberás iniciar sesión nuevamente.
                 </p>
               </Col>
             </Row>
