@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./Register.css";
 
@@ -10,9 +10,9 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.classList.add("login-register-background");
+    document.body.classList.add("register-background");
     return () => {
-      document.body.classList.remove("login-register-background");
+      document.body.classList.remove("register-background");
     };
   }, []);
 
@@ -114,7 +114,7 @@ const Register = () => {
   };
 
   return (
-    <Container className="mt-5">
+    <Container className="mt-5 form-container">
       <Row className="justify-content-center">
         <Col md={6} lg={4}>
           <Card className="form">
@@ -187,7 +187,7 @@ const Register = () => {
                 <div className="d-grid mt-3">
                   <Button
                     type="submit"
-                    className="login-button"
+                    className="form-button"
                     disabled={loading}
                   >
                     {loading ? "Creando Cuenta..." : "Registrarse"}

@@ -1,12 +1,26 @@
 import { useEffect, useState } from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
-import { PersonCircle } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { PersonCircle, BoxArrowRight } from "react-bootstrap-icons";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "/icon-w.svg";
 import "./NavBar.css";
 
-const NavBar = () => {
+const NavBar = ({ token, isAdmin, onLogout }) => {
   const [scrolled, setScrolled] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = () => {
+    onLogout();
+    navigate("/");
+  };
+
+  const aboutusActive = location.pathname === "/about-us";
+  const productsActive = location.pathname === "/products";
+  const rewardsActive = location.pathname === "/rewards";
+  const myOrdersActive = location.pathname === "/myOrders";
+  const loginActive = location.pathname === "/login";
 
   useEffect(() => {
     const onScroll = () => {
@@ -22,22 +36,59 @@ const NavBar = () => {
       fixed="top"
       className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}
     >
-      <Container fluid className="d-flex justify-content-center">
+      <Container fluid className="navbar-container">
         <Navbar.Brand as={Link} to="/" className="brand navlink">
           Gran Reserva
           <img src={logoSrc} width="50" height="50" alt="Gran Reserva Logo" />
         </Navbar.Brand>
         <Nav>
-          <Nav.Link as={Link} to="/about-us" className="navlink">
+          <Nav.Link
+            as={Link}
+            to="/about-us"
+            className={aboutusActive ? "underlined navlink" : "navlink"}
+          >
             Sobre Nosotros
           </Nav.Link>
-          <Nav.Link as={Link} to="/products" className="navlink">
+          <Nav.Link
+            as={Link}
+            to="/products"
+            className={productsActive ? "underlined navlink" : "navlink"}
+          >
             Productos
           </Nav.Link>
-          <Nav.Link as={Link} to="/login" className="navlink">
-            <PersonCircle />
-            Iniciar Sesión
-          </Nav.Link>
+          {token && (
+            <Nav.Link
+              as={Link}
+              to="/rewards"
+              className={rewardsActive ? "underlined navlink" : "navlink"}
+            >
+              Recompensas
+            </Nav.Link>
+          )}
+          {token && (
+            <Nav.Link
+              as={Link}
+              to="/myOrders"
+              className={myOrdersActive ? "underlined navlink" : "navlink"}
+            >
+              Mis Pedidos
+            </Nav.Link>
+          )}
+          {token ? (
+            <Nav.Link onClick={handleLogout} className="navlink">
+              <BoxArrowRight />
+              Cerrar Sesión
+            </Nav.Link>
+          ) : (
+            <Nav.Link
+              as={Link}
+              to="/login"
+              className={loginActive ? "underlined navlink" : "navlink"}
+            >
+              <PersonCircle />
+              Iniciar Sesión
+            </Nav.Link>
+          )}
         </Nav>
       </Container>
     </Navbar>

@@ -4,17 +4,35 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./Login.css";
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.classList.add("login-register-background");
+    document.body.classList.add("login-background");
     return () => {
-      document.body.classList.remove("login-register-background");
+      document.body.classList.remove("login-background");
     };
   }, []);
+
+  const parseJwt = (token) => {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -74,7 +92,10 @@ const Login = () => {
         toast.error(errorMsg);
       } else {
         toast.success("Login exitoso");
-        localStorage.setItem("authToken", token);
+        const payload = parseJwt(token);
+        const userRole = payload ? payload.role : "User";
+        const isAdmin = userRole === "Admin" || userRole === "SuperAdmin";
+        onLogin(token, isAdmin);
         navigate("/");
       }
     } catch (err) {
@@ -86,7 +107,7 @@ const Login = () => {
   };
 
   return (
-    <Container className="mt-5">
+    <Container className="mt-5 form-container">
       <Row className="justify-content-center">
         <Col md={6} lg={4}>
           <Card className="form">
@@ -121,7 +142,7 @@ const Login = () => {
                 <div className="d-grid mt-3">
                   <Button
                     type="submit"
-                    className="login-button"
+                    className="form-button"
                     disabled={loading}
                   >
                     {loading ? "Ingresando..." : "Ingresar"}

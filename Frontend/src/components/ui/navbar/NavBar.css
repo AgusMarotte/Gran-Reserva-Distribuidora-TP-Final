@@ -1,10 +1,17 @@
 .brand {
   font-family: "Tangerine", cursive !important;
-  font-weight: 700;
-  font-style: normal;
   font-size: 48px;
+}
+
+.underlined {
+  text-decoration: underline;
+}
+
+.navbar-container {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  padding-left: 250px;
+  padding-right: 250px;
 }
 
 .navlink,
