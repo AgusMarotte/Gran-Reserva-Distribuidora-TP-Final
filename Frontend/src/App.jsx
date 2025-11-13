@@ -14,6 +14,7 @@ import MyOrders from "./components/content/myorders/MyOrders.jsx";
 import NotFound from "./components/content/notfound/NotFound.jsx";
 import Protected from "./components/auth/protected/Protected.jsx";
 import Public from "./components/auth/public/Public.jsx";
+import MyRewardExchanges from "./components/content/myrewardexchanges/MyRewardExchanges.jsx";
 import "./App.css";
 
 function App() {
@@ -21,7 +22,6 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userPoints, setUserPoints] = useState(0);
-  const [maxRewardDigits, setMaxRewardDigits] = useState(1);
 
   const handlePointsUpdate = (newPoints) => {
     const pointsNumber = Number(newPoints) || 0;
@@ -63,30 +63,6 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    fetch(
-      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Reward"
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.length > 0) {
-          const maxPoints = data.reduce(
-            (max, reward) => Math.max(max, reward.pointsRequired),
-            0
-          );
-          const digits = maxPoints.toString().length;
-          setMaxRewardDigits(digits > 0 ? digits : 1);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching max reward points:", err);
-        setMaxRewardDigits(6);
-      });
-  }, []);
-
-  const userPointsDigits = (userPoints || 0).toString().length;
-  const minDigitsToShow = Math.max(4, userPointsDigits, maxRewardDigits);
-
   if ("scrollRestoration" in history) {
     history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
@@ -107,7 +83,6 @@ function App() {
         isAdmin={isAdmin}
         onLogout={handleLogout}
         userPoints={userPoints}
-        maxPointsDigits={minDigitsToShow}
       />
       <ToastContainer
         position="bottom-right"
@@ -144,6 +119,14 @@ function App() {
                 userPoints={userPoints}
                 onPointsUpdate={handlePointsUpdate}
               />
+            }
+          />
+          <Route
+            path="/myExchanges"
+            element={
+              <Protected isSignedIn={token} isLoading={isLoading}>
+                <MyRewardExchanges />
+              </Protected>
             }
           />
           <Route path="/products" element={<Products />} />

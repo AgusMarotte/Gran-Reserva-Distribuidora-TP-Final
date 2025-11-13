@@ -2,12 +2,10 @@
   font-family: "Tangerine", cursive !important;
   font-size: 48px;
 }
-/*
+
 .count-up-text {
   font-variant-numeric: tabular-nums;
-  display: inline-block;
-  text-align: right;
-}*/
+}
 
 .underlined {
   text-decoration: underline;

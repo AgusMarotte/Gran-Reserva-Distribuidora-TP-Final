@@ -110,7 +110,7 @@ const MyOrders = () => {
             >
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <h5 className="mb-0">Orden #{order.id}</h5>
+                  <h5 className="mb-0">Orden ID#{order.id}</h5>
                   <small className="text-secondary">
                     {formatDateTime(order.date)}
                   </small>
@@ -135,7 +135,9 @@ const MyOrders = () => {
           data-bs-theme="dark"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Detalles de la Orden #{selectedOrder.id}</Modal.Title>
+            <Modal.Title>
+              Detalles de la Orden ID#{selectedOrder.id}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p className="mb-1">
@@ -170,7 +172,7 @@ const MyOrders = () => {
                           {precio.toLocaleString("es-AR", {
                             minimumFractionDigits: 2,
                           })}{" "}
-                          c/u × {cantidad}
+                          c/u x {cantidad}
                         </span>
                         <strong>
                           $
@@ -191,6 +193,7 @@ const MyOrders = () => {
 
             {selectedOrder.qrCodeBase64 && (
               <div className="text-center my-3">
+                <h6>Código QR:</h6>
                 <img
                   src={`data:image/png;base64,${selectedOrder.qrCodeBase64}`}
                   alt={`Código QR para Orden #${selectedOrder.id}`}

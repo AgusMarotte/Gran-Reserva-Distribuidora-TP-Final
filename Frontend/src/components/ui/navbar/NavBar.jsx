@@ -6,7 +6,7 @@ import logoSrc from "/icon-w.svg";
 import CountUp from "../countup/CountUp.jsx";
 import "./NavBar.css";
 
-const NavBar = ({ token, isAdmin, onLogout, userPoints, maxPointsDigits }) => {
+const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
   const [scrolled, setScrolled] = useState(false);
 
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints, maxPointsDigits }) => {
   const rewardsActive = location.pathname === "/rewards";
   const myOrdersActive = location.pathname === "/myOrders";
   const loginActive = location.pathname === "/login";
+  const myExchangesActive = location.pathname === "/myExchanges";
 
   useEffect(() => {
     const onScroll = () => {
@@ -68,7 +69,6 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints, maxPointsDigits }) => {
                   direction="up"
                   duration={1}
                   className="count-up-text"
-                  minIntegerDigits={maxPointsDigits}
                 />
                 {" Puntos"}
               </span>
@@ -80,7 +80,16 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints, maxPointsDigits }) => {
               to="/myOrders"
               className={myOrdersActive ? "underlined navlink" : "navlink"}
             >
-              Mis Pedidos
+              Mis Órdenes
+            </Nav.Link>
+          )}
+          {token && (
+            <Nav.Link
+              as={Link}
+              to="/myExchanges"
+              className={myExchangesActive ? "underlined navlink" : "navlink"}
+            >
+              Mis Canjes
             </Nav.Link>
           )}
           {token ? (
