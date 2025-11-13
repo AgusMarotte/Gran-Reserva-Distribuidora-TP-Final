@@ -18,6 +18,7 @@ import MyRewardExchanges from "./components/content/myrewardexchanges/MyRewardEx
 import Cart from "./components/content/cart/Cart.jsx";
 import Settings from "./components/content/settings/Settings.jsx";
 import "./App.css";
+import Orders from "./components/content/orders/Orders.jsx";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -183,7 +184,30 @@ function App() {
                 </Protected>
               }
             />
-
+            <Route
+              path="/admin/orders"
+              element={
+                <Protected isSignedIn={token} isLoading={isLoading}>
+                  <Orders />
+                </Protected>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <Protected isSignedIn={token} isLoading={isLoading}>
+                  <Orders />
+                </Protected>
+              }
+            />
+            <Route
+              path="/admin/exchanges"
+              element={
+                <Protected isSignedIn={token} isLoading={isLoading}>
+                  <Orders />
+                </Protected>
+              }
+            />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />

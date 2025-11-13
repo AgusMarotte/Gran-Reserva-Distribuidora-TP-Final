@@ -13,6 +13,16 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   max-width: 18rem;
 }
+
+.deleted-card {
+  border: 1px solid #d05255;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 55%,
+    rgba(120, 45, 45, 0.5) 85%
+  ) !important;
+}
+
 .item-card .card-img-top {
   background-color: white;
   border-top-left-radius: 15px;
