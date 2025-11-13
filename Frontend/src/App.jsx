@@ -17,8 +17,10 @@ import Public from "./components/auth/public/Public.jsx";
 import MyRewardExchanges from "./components/content/myrewardexchanges/MyRewardExchanges.jsx";
 import Cart from "./components/content/cart/Cart.jsx";
 import Settings from "./components/content/settings/Settings.jsx";
-import "./App.css";
 import Orders from "./components/content/orders/Orders.jsx";
+import Users from "./components/content/users/Users.jsx";
+import Exchanges from "./components/content/exchanges/Exchanges.jsx";
+import "./App.css";
 
 function App() {
   const [token, setToken] = useState(null);
@@ -196,7 +198,7 @@ function App() {
               path="/admin/users"
               element={
                 <Protected isSignedIn={token} isLoading={isLoading}>
-                  <Orders />
+                  <Users />
                 </Protected>
               }
             />
@@ -204,7 +206,7 @@ function App() {
               path="/admin/exchanges"
               element={
                 <Protected isSignedIn={token} isLoading={isLoading}>
-                  <Orders />
+                  <Exchanges />
                 </Protected>
               }
             />

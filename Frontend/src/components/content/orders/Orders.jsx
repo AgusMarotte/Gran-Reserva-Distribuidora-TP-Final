@@ -302,7 +302,7 @@ const Orders = () => {
           data-bs-theme="dark"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Orden #{selectedOrder.id}</Modal.Title>
+            <Modal.Title>Orden ID#{selectedOrder.id}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>
