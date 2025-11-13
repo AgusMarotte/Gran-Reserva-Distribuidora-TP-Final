@@ -20,3 +20,7 @@ body.rewards-background::before {
 body.rewards-background #root {
   background-color: transparent;
 }
+
+.reward-sort:hover {
+  background-color: #843436 !important;
+}

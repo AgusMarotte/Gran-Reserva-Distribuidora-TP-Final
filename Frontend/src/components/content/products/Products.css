@@ -20,3 +20,12 @@ body.products-background::before {
 body.products-background #root {
   background-color: transparent;
 }
+
+.wine-filter-menu .filter-item:focus,
+.wine-filter-menu .filter-item.active {
+  background-color: #843436 !important;
+}
+
+.product-sort:hover {
+  background-color: #843436 !important;
+}

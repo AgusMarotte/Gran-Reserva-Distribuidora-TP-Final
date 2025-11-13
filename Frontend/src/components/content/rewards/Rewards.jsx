@@ -1,12 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import ItemList from "../itemlist/ItemList";
 import { toast } from "react-toastify";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Form, Row, Col, Dropdown } from "react-bootstrap";
+import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
 import "./Rewards.css";
 
 const Rewards = ({ userPoints, onPointsUpdate }) => {
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: "pointsRequired",
+    direction: "asc",
+  });
 
   const token = localStorage.getItem("token");
 
@@ -17,27 +23,87 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
     };
   }, []);
 
+  const fetchRewards = useCallback(async () => {
+    setLoading(true);
+    let url =
+      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Reward";
+
+    if (searchTerm) {
+      url = `${url}/search?name=${encodeURIComponent(searchTerm)}`;
+    }
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error("No se pudieron cargar las recompensas");
+      }
+      const data = await res.json();
+      setRewards(data);
+    } catch (err) {
+      console.error("Error fetching rewards:", err);
+      toast.error("Error al cargar las recompensas.");
+      setRewards([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm]);
+
   useEffect(() => {
-    fetch(
-      "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Reward"
-    )
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("No se pudieron cargar las recompensas");
+    fetchRewards();
+  }, [fetchRewards]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const SortIcon = ({ fieldKey }) => {
+    if (sortConfig.key !== fieldKey) return null;
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="ms-1" />
+    ) : (
+      <ArrowDown className="ms-1" />
+    );
+  };
+
+  const sortedRewards = useMemo(() => {
+    let sortableItems = [...rewards];
+    if (sortConfig.key) {
+      sortableItems.sort((a, b) => {
+        let aValue, bValue;
+
+        switch (sortConfig.key) {
+          case "name":
+            aValue = a.name.toLowerCase();
+            bValue = b.name.toLowerCase();
+            break;
+          case "pointsRequired":
+            aValue = a.pointsRequired;
+            bValue = b.pointsRequired;
+            break;
+          default:
+            aValue = a[sortConfig.key];
+            bValue = b[sortConfig.key];
         }
-        return res.json();
-      })
-      .then((data) => {
-        setRewards(data);
-      })
-      .catch((err) => {
-        console.error("Error fetching rewards:", err);
-        toast.error("Error al cargar las recompensas.");
-      })
-      .finally(() => {
-        setLoading(false);
+
+        if (aValue < bValue) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
       });
-  }, []);
+    }
+    return sortableItems;
+  }, [rewards, sortConfig]);
 
   const redeemReward = async (reward) => {
     if (!token) {
@@ -95,25 +161,74 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
     }
   };
 
-  if (loading && rewards.length === 0) {
-    return (
-      <div className="page-center">
-        <Spinner animation="border" variant="light" />
-        Cargando Listado de Recompensas
-      </div>
-    );
-  }
+  const noRewardsFound = !loading && sortedRewards.length === 0;
 
   return (
     <div className="container mt-4" style={{ color: "white" }}>
       <h3 className="mb-3 text-center">Recompensas Disponibles</h3>
 
-      <ItemList
-        items={rewards}
-        onAction={redeemReward}
-        actionText="Canjear"
-        emptyListMessage="No hay recompensas disponibles en este momento."
-      />
+      <Row className="mb-4 justify-content-center">
+        {/* Barra de Búsqueda */}
+        <Col md={4} className="mb-3 mb-md-0">
+          <Form.Control
+            type="text"
+            placeholder="Buscar recompensa..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </Col>
+
+        {/* Dropdown de Ordenamiento */}
+        <Col md={2}>
+          <Dropdown>
+            <Dropdown.Toggle
+              variant="secondary"
+              id="dropdown-sort"
+              className="w-100"
+            >
+              Ordenar por
+              <SortIcon fieldKey={sortConfig.key} />
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu
+              data-bs-theme="dark"
+              className="wine-sort-menu"
+              style={{ minWidth: "100%", zIndex: 1050 }}
+            >
+              <Dropdown.Item
+                onClick={() => handleSort("name")}
+                className="filter-item"
+              >
+                Nombre <SortIcon fieldKey="name" />
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => handleSort("pointsRequired")}
+                className="filter-item"
+              >
+                Puntos <SortIcon fieldKey="pointsRequired" />
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Col>
+      </Row>
+
+      {loading ? (
+        <div className="page-center">
+          <Spinner animation="border" variant="light" />
+          Cargando Listado de Recompensas
+        </div>
+      ) : noRewardsFound ? (
+        <p className="text-center mt-5">
+          No se encontraron recompensas que coincidan con el nombre.
+        </p>
+      ) : (
+        <ItemList
+          items={sortedRewards}
+          onAction={redeemReward}
+          actionText="Canjear"
+          emptyListMessage="No hay recompensas disponibles en este momento."
+        />
+      )}
     </div>
   );
 };
