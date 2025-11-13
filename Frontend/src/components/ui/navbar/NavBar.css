@@ -51,3 +51,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+.dropdown-link:active {
+  background-color: #843436 !important;
+}

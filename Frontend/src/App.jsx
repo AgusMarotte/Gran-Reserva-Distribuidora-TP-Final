@@ -15,6 +15,7 @@ import NotFound from "./components/content/notfound/NotFound.jsx";
 import Protected from "./components/auth/protected/Protected.jsx";
 import Public from "./components/auth/public/Public.jsx";
 import MyRewardExchanges from "./components/content/myrewardexchanges/MyRewardExchanges.jsx";
+import Cart from "./components/content/cart/Cart.jsx";
 import "./App.css";
 
 function App() {
@@ -78,72 +79,74 @@ function App() {
 
   return (
     <Router basename="/Gran-Reserva-Distribuidora-TP-Final/">
-      <NavBar
-        token={token}
-        isAdmin={isAdmin}
-        onLogout={handleLogout}
-        userPoints={userPoints}
-      />
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        closeOnClick
-        theme="colored"
-        pauseOnHover
-        transition={Slide}
-        limit={3}
-      />
-      <div className="content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/login"
-            element={
-              <Public isSignedIn={token} isLoading={isLoading}>
-                <Login onLogin={handleLogin} />
-              </Public>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <Public isSignedIn={token} isLoading={isLoading}>
-                <Register />
-              </Public>
-            }
-          />
-          <Route
-            path="/rewards"
-            element={
-              <Rewards
-                userPoints={userPoints}
-                onPointsUpdate={handlePointsUpdate}
-              />
-            }
-          />
-          <Route
-            path="/myExchanges"
-            element={
-              <Protected isSignedIn={token} isLoading={isLoading}>
-                <MyRewardExchanges />
-              </Protected>
-            }
-          />
-          <Route path="/products" element={<Products />} />
-          <Route
-            path="/myOrders"
-            element={
-              <Protected isSignedIn={token} isLoading={isLoading}>
-                <MyOrders />
-              </Protected>
-            }
-          />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-      <Footer />
+      <Cart onPointsUpdate={handlePointsUpdate}>
+        <NavBar
+          token={token}
+          isAdmin={isAdmin}
+          onLogout={handleLogout}
+          userPoints={userPoints}
+        />
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          closeOnClick
+          theme="colored"
+          pauseOnHover
+          transition={Slide}
+          limit={3}
+        />
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/login"
+              element={
+                <Public isSignedIn={token} isLoading={isLoading}>
+                  <Login onLogin={handleLogin} />
+                </Public>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <Public isSignedIn={token} isLoading={isLoading}>
+                  <Register />
+                </Public>
+              }
+            />
+            <Route
+              path="/rewards"
+              element={
+                <Rewards
+                  userPoints={userPoints}
+                  onPointsUpdate={handlePointsUpdate}
+                />
+              }
+            />
+            <Route
+              path="/my-exchanges"
+              element={
+                <Protected isSignedIn={token} isLoading={isLoading}>
+                  <MyRewardExchanges />
+                </Protected>
+              }
+            />
+            <Route path="/products" element={<Products />} />
+            <Route
+              path="/my-orders"
+              element={
+                <Protected isSignedIn={token} isLoading={isLoading}>
+                  <MyOrders />
+                </Protected>
+              }
+            />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <Footer />
+      </Cart>
     </Router>
   );
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Navbar, Container, Nav } from "react-bootstrap";
-import { PersonCircle, BoxArrowRight, Coin } from "react-bootstrap-icons";
+import { Navbar, Container, Nav, Badge, Dropdown } from "react-bootstrap";
+import { PersonCircle, BoxArrowRight, Coin, Cart } from "react-bootstrap-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "/icon-w.svg";
 import CountUp from "../countup/CountUp.jsx";
+import { useCart } from "../../content/cart/Cart.jsx";
 import "./NavBar.css";
 
 const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
@@ -11,6 +12,8 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { totalItemsCount, setIsCartOpen } = useCart();
 
   const handleLogout = () => {
     onLogout();
@@ -20,9 +23,24 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
   const aboutusActive = location.pathname === "/about-us";
   const productsActive = location.pathname === "/products";
   const rewardsActive = location.pathname === "/rewards";
-  const myOrdersActive = location.pathname === "/myOrders";
+  const myOrdersActive = location.pathname === "/my-orders";
   const loginActive = location.pathname === "/login";
   const myExchangesActive = location.pathname === "/myExchanges";
+
+  const calculateWidthInCh = (digits) => {
+    if (!digits || digits < 1) digits = 1;
+    const commas = Math.floor((digits - 1) / 3);
+    return digits + commas + "ch";
+  };
+
+  const maxPointsDigits = 6;
+
+  const countUpStyle = {
+    minWidth: calculateWidthInCh(maxPointsDigits),
+    display: "inline-block",
+    textAlign: "right",
+    fontVariantNumeric: "tabular-nums",
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -31,6 +49,50 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const UserDropdown = () => (
+    <Dropdown className="d-flex align-items-center">
+      <Dropdown.Toggle
+        variant="secondary"
+        id="user-dropdown-toggle"
+        className="navlink"
+        style={{ backgroundColor: "transparent", border: "none" }}
+      >
+        <PersonCircle className="me-1" />
+        Mi Cuenta
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu data-bs-theme="dark" style={{ zIndex: 1050 }}>
+        {token && !isAdmin && (
+          <>
+            <Dropdown.Item
+              as={Link}
+              to="/my-orders"
+              active={myOrdersActive}
+              className="dropdown-link"
+            >
+              Mis Pedidos
+            </Dropdown.Item>
+            <Dropdown.Item
+              as={Link}
+              to="/my-exchanges"
+              active={myExchangesActive}
+              className="dropdown-link"
+            >
+              Mis Canjes
+            </Dropdown.Item>
+          </>
+        )}
+
+        <Dropdown.Divider />
+
+        <Dropdown.Item onClick={handleLogout} className="dropdown-link">
+          <BoxArrowRight className="me-1" />
+          Cerrar Sesión
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
 
   return (
     <Navbar
@@ -58,7 +120,7 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
           >
             Productos
           </Nav.Link>
-          {token && (
+          {token && !isAdmin && (
             <Nav.Link as={Link} to="/rewards" className="navlink">
               <Coin className="mx-1" />
               <span className={rewardsActive ? "underlined" : ""}>
@@ -69,34 +131,26 @@ const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {
                   direction="up"
                   duration={1}
                   className="count-up-text"
+                  minIntegerDigits={maxPointsDigits}
+                  style={countUpStyle}
                 />
                 {" Puntos"}
               </span>
             </Nav.Link>
           )}
-          {token && (
-            <Nav.Link
-              as={Link}
-              to="/myOrders"
-              className={myOrdersActive ? "underlined navlink" : "navlink"}
-            >
-              Mis Órdenes
-            </Nav.Link>
-          )}
-          {token && (
-            <Nav.Link
-              as={Link}
-              to="/myExchanges"
-              className={myExchangesActive ? "underlined navlink" : "navlink"}
-            >
-              Mis Canjes
-            </Nav.Link>
-          )}
+
+          <Nav.Link onClick={() => setIsCartOpen(true)} className="navlink">
+            <Cart />
+            {totalItemsCount > 0 && (
+              <Badge pill bg="danger" className="ms-1">
+                {totalItemsCount}
+              </Badge>
+            )}
+            <span className="ms-1">Carrito</span>
+          </Nav.Link>
+
           {token ? (
-            <Nav.Link onClick={handleLogout} className="navlink">
-              <BoxArrowRight />
-              Cerrar Sesión
-            </Nav.Link>
+            <UserDropdown />
           ) : (
             <Nav.Link
               as={Link}

@@ -3,6 +3,7 @@ import ItemList from "../itemlist/ItemList";
 import { toast } from "react-toastify";
 import { Spinner, Form, Row, Col, Dropdown } from "react-bootstrap";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
+import { useCart } from "../cart/Cart.jsx";
 import "./Products.css";
 
 const productTypes = ["Tinto", "Blanco", "Rosado", "Espumante"];
@@ -16,6 +17,8 @@ const Products = () => {
     key: "name",
     direction: "asc",
   });
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     document.body.classList.add("products-background");
@@ -111,13 +114,7 @@ const Products = () => {
       return;
     }
 
-    setProducts((prevProducts) =>
-      prevProducts.map((p) =>
-        p.id === product.id ? { ...p, stock: p.stock - 1 } : p
-      )
-    );
-
-    toast.success(`${product.name} agregado al carrito`);
+    addToCart(product, 1);
   };
 
   const SortIcon = ({ fieldKey }) => {

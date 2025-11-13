@@ -3,6 +3,7 @@ import ItemList from "../itemlist/ItemList";
 import { toast } from "react-toastify";
 import { Spinner, Form, Row, Col, Dropdown } from "react-bootstrap";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
+import { useNavigate } from "react-router-dom";
 import "./Rewards.css";
 
 const Rewards = ({ userPoints, onPointsUpdate }) => {
@@ -15,6 +16,7 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
   });
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.classList.add("rewards-background");
@@ -137,7 +139,13 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const responseText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch (e) {
+          throw new Error(responseText || "No se pudo realizar el canje.");
+        }
         throw new Error(errorData.error || "No se pudo realizar el canje.");
       }
 
@@ -154,6 +162,8 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
       );
 
       toast.success("Canje realizado con éxito");
+
+      navigate("/my-exchanges");
     } catch (err) {
       toast.error(err.message || "Error al canjear.");
     } finally {
@@ -168,7 +178,6 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
       <h3 className="mb-3 text-center">Recompensas Disponibles</h3>
 
       <Row className="mb-4 justify-content-center">
-        {/* Barra de Búsqueda */}
         <Col md={4} className="mb-3 mb-md-0">
           <Form.Control
             type="text"
@@ -178,7 +187,6 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
           />
         </Col>
 
-        {/* Dropdown de Ordenamiento */}
         <Col md={2}>
           <Dropdown>
             <Dropdown.Toggle
