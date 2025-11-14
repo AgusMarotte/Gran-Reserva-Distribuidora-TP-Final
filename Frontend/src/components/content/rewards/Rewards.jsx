@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import ItemList from "../itemlist/ItemList";
-import ItemModal from "../itemmodal/ItemModal"; 
+import ItemModal from "../itemmodal/ItemModal";
 import { toast } from "react-toastify";
 import {
   Spinner,
@@ -10,8 +10,9 @@ import {
   Dropdown,
   ButtonGroup,
   ToggleButton,
+  Button,
 } from "react-bootstrap";
-import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
+import { ArrowDown, ArrowUp, PlusCircleFill } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 import "./Rewards.css";
 
@@ -27,8 +28,9 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
     direction: "asc",
   });
 
-  const [viewMode, setViewMode] = useState("active"); 
+  const [viewMode, setViewMode] = useState("active");
   const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [modalMode, setModalMode] = useState("edit");
   const [selectedReward, setSelectedReward] = useState(null);
 
@@ -130,6 +132,10 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
     setShowModal(true);
   };
 
+  const handleOpenCreateModal = () => {
+    setShowCreateModal(true);
+  };
+
   const handleAction = (reward) => {
     if (isAdmin) {
       openModal("edit", reward);
@@ -200,7 +206,7 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
     <div className="container mt-4" style={{ color: "white" }}>
       <h3 className="mb-3 text-center">Recompensas Disponibles</h3>
 
-      <Row className="mb-4 align-items-end">
+      <Row className="mb-4 align-items-end g-2">
         <Col md={isAdmin ? 3 : 6}>
           <Form.Control
             type="text"
@@ -211,13 +217,13 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
         </Col>
 
         {isAdmin && (
-          <Col md={3} className="mb-2 mb-md-0 text-center">
+          <Col md={3} className="text-center">
             <ButtonGroup>
               <ToggleButton
-                id="view-active"
+                id="view-active-reward"
                 type="radio"
                 variant="outline-light"
-                name="view"
+                name="view-reward"
                 value="active"
                 checked={viewMode === "active"}
                 onChange={() => setViewMode("active")}
@@ -225,10 +231,10 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
                 Activas
               </ToggleButton>
               <ToggleButton
-                id="view-all"
+                id="view-all-reward"
                 type="radio"
                 variant="outline-light"
-                name="view"
+                name="view-reward"
                 value="all"
                 checked={viewMode === "all"}
                 onChange={() => setViewMode("all")}
@@ -236,10 +242,10 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
                 Todas
               </ToggleButton>
               <ToggleButton
-                id="view-deleted"
+                id="view-deleted-reward"
                 type="radio"
                 variant="outline-light"
-                name="view"
+                name="view-reward"
                 value="deleted"
                 checked={viewMode === "deleted"}
                 onChange={() => setViewMode("deleted")}
@@ -265,6 +271,19 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
             </Dropdown.Menu>
           </Dropdown>
         </Col>
+
+        {isAdmin && (
+          <Col md={3} className="text-end">
+            <Button
+              variant="danger"
+              className="w-100"
+              onClick={handleOpenCreateModal}
+              style={{ whiteSpace: "nowrap" }}
+            >
+              <PlusCircleFill className="me-1" /> Crear
+            </Button>
+          </Col>
+        )}
       </Row>
 
       {loading ? (
@@ -285,16 +304,22 @@ const Rewards = ({ userPoints, onPointsUpdate }) => {
           emptyListMessage="No hay recompensas disponibles."
         />
       )}
-      
-      {selectedReward && (
-        <ItemModal
-          show={showModal}
-          handleClose={() => setShowModal(false)}
-          product={selectedReward}
-          mode={modalMode}
-          onProductAction={fetchRewards}
-        />
-      )}
+
+      <ItemModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        product={selectedReward}
+        mode={modalMode}
+        onProductAction={fetchRewards}
+      />
+
+      <ItemModal
+        show={showCreateModal}
+        handleClose={() => setShowCreateModal(false)}
+        mode="create"
+        itemType="reward"
+        onProductAction={fetchRewards}
+      />
     </div>
   );
 };

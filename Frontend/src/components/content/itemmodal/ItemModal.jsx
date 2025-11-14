@@ -8,33 +8,61 @@ const API_BASE_REWARD =
   "https://granreserva-brd0e6efdmhsdddb.canadacentral-01.azurewebsites.net/api/Reward";
 const productTypes = ["Tinto", "Blanco", "Rosado", "Espumante"];
 
-const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
+const emptyProductForm = {
+  name: "",
+  type: "Tinto",
+  price: 0,
+  stock: 0,
+  imageUrl: "",
+};
+
+const emptyRewardForm = {
+  name: "",
+  description: "",
+  pointsRequired: 0,
+  stock: 0,
+  imageUrl: "",
+};
+
+const ItemModal = ({
+  show,
+  handleClose,
+  product,
+  mode,
+  itemType = "product",
+  onProductAction,
+}) => {
   const [formData, setFormData] = useState({});
   const [isPermanentDelete, setIsPermanentDelete] = useState(false);
   const [saving, setSaving] = useState(false);
   const token = localStorage.getItem("token");
 
   const isSoftDeleted = product?.isDeleted === true;
-
-  const isReward = product?.pointsRequired !== undefined;
+  const isReward =
+    itemType === "reward" || product?.pointsRequired !== undefined;
 
   const API_BASE_URL = isReward ? API_BASE_REWARD : API_BASE_PRODUCT;
   const API_RESTORE_URL = `${API_BASE_URL}/${product?.id}/restore`;
 
   useEffect(() => {
-    if (product && mode === "edit") {
-      setFormData({
-        name: product.name,
-        type: product.type,
-        price: isReward ? undefined : product.price,
-        pointsRequired: isReward ? product.pointsRequired : undefined,
-        stock: product.stock,
-        imageUrl: product.imageUrl,
-      });
-    } else if (product && mode === "delete") {
-      setIsPermanentDelete(isSoftDeleted);
+    if (show) {
+      if (mode === "edit" && product) {
+        setFormData({
+          name: product.name,
+          type: product.type,
+          price: isReward ? undefined : product.price,
+          description: isReward ? product.description : undefined,
+          pointsRequired: isReward ? product.pointsRequired : undefined,
+          stock: product.stock,
+          imageUrl: product.imageUrl,
+        });
+      } else if (mode === "create") {
+        setFormData(isReward ? emptyRewardForm : emptyProductForm);
+      } else if (mode === "delete") {
+        setIsPermanentDelete(isSoftDeleted);
+      }
     }
-  }, [product, mode, isSoftDeleted, isReward]);
+  }, [product, mode, isSoftDeleted, isReward, show]);
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -47,10 +75,7 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
     }));
   };
 
-  const handleSaveEdit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-
+  const validateForm = () => {
     if (
       !formData.name?.trim() ||
       (isReward && formData.pointsRequired < 0) ||
@@ -60,10 +85,12 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
       toast.error(
         "El nombre no puede estar vacío y los valores numéricos no pueden ser negativos."
       );
-      setSaving(false);
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const handleUpdate = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/${product.id}`, {
         method: "PUT",
@@ -76,21 +103,46 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorMsg = `Error al actualizar ${
-          isReward ? "la recompensa" : "el producto"
-        }.`;
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMsg = errorData.error || errorData.message || errorMsg;
-        } catch {
-          errorMsg = errorText || "Error desconocido al actualizar.";
-        }
-        throw new Error(errorMsg);
+        throw new Error(errorText || "Error al actualizar.");
       }
+      toast.success(`${formData.name} actualizado con éxito.`);
+    } catch (err) {
+      throw err;
+    }
+  };
 
-      toast.success(
-        `${formData.name} actualizado${isReward ? "a" : ""} con éxito.`
-      );
+  const handleCreate = async () => {
+    try {
+      const response = await fetch(API_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Error al crear.");
+      }
+      toast.success(`${formData.name} creado con éxito.`);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setSaving(true);
+
+    try {
+      if (mode === "edit") {
+        await handleUpdate();
+      } else if (mode === "create") {
+        await handleCreate();
+      }
       onProductAction();
       handleClose();
     } catch (err) {
@@ -144,16 +196,7 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        let errorMsg = `Error al intentar ${
-          permanently ? "eliminar permanentemente" : "dar de baja"
-        } ${isReward ? "la recompensa" : "el producto"}.`;
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMsg = errorData.error || errorData.message || errorMsg;
-        } catch {
-          errorMsg = errorText || "Error desconocido al eliminar.";
-        }
-        throw new Error(errorMsg);
+        throw new Error(errorText || "Error desconocido al eliminar.");
       }
 
       toast.success(
@@ -171,7 +214,7 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
   };
 
   const renderEditForm = () => (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3">
         <Form.Label>Nombre</Form.Label>
         <Form.Control
@@ -183,6 +226,20 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
           className="bg-dark text-white border-secondary"
         />
       </Form.Group>
+
+      {isReward && (
+        <Form.Group className="mb-3">
+          <Form.Label>Descripción</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            name="description"
+            value={formData.description || ""}
+            onChange={handleEditChange}
+            className="bg-dark text-white border-secondary"
+          />
+        </Form.Group>
+      )}
 
       {!isReward && (
         <Form.Group className="mb-3">
@@ -210,7 +267,7 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
             <Form.Control
               type="number"
               name="price"
-              value={formData.price || 0}
+              value={formData.price ?? 0}
               onChange={handleEditChange}
               min="0"
               required
@@ -225,7 +282,7 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
             <Form.Control
               type="number"
               name="pointsRequired"
-              value={formData.pointsRequired || 0}
+              value={formData.pointsRequired ?? 0}
               onChange={handleEditChange}
               min="0"
               required
@@ -239,7 +296,7 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
           <Form.Control
             type="number"
             name="stock"
-            value={formData.stock || 0}
+            value={formData.stock ?? 0}
             onChange={handleEditChange}
             min="0"
             required
@@ -309,6 +366,9 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
     if (mode === "edit") {
       return isSoftDeleted ? renderRestoreUI() : renderEditForm();
     }
+    if (mode === "create") {
+      return renderEditForm();
+    }
     if (mode === "delete") return renderDeleteForm();
     return null;
   };
@@ -328,9 +388,10 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
           </Button>
           <Button
             variant={actionVariant}
-            onClick={isSoftDeleted ? handleRestore : handleSaveEdit}
+            onClick={isSoftDeleted ? handleRestore : handleSubmit}
             disabled={saving}
             type={isSoftDeleted ? "button" : "submit"}
+            form={isSoftDeleted ? "" : "item-form"}
           >
             {saving ? (
               <>
@@ -339,6 +400,31 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
               </>
             ) : (
               actionText
+            )}
+          </Button>
+        </>
+      );
+    }
+
+    if (mode === "create") {
+      return (
+        <>
+          <Button variant="secondary" onClick={handleClose} disabled={saving}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleSubmit}
+            disabled={saving}
+            type="submit"
+          >
+            {saving ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />{" "}
+                Creando...
+              </>
+            ) : (
+              "Crear"
             )}
           </Button>
         </>
@@ -368,6 +454,9 @@ const ItemModal = ({ show, handleClose, product, mode, onProductAction }) => {
   };
 
   const getModalTitle = () => {
+    if (mode === "create") {
+      return `Crear ${isReward ? "Recompensa" : "Producto"}`;
+    }
     if (mode === "edit") {
       return isSoftDeleted
         ? `Restaurar ${isReward ? "Recompensa" : "Producto"}`

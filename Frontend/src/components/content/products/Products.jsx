@@ -10,8 +10,9 @@ import {
   Dropdown,
   ButtonGroup,
   ToggleButton,
+  Button,
 } from "react-bootstrap";
-import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
+import { ArrowDown, ArrowUp, PlusCircleFill } from "react-bootstrap-icons";
 import { useCart } from "../../../context/CartContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "./Products.css";
@@ -33,6 +34,7 @@ const Products = () => {
   const [viewMode, setViewMode] = useState("active");
 
   const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [modalMode, setModalMode] = useState("edit");
   const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -168,6 +170,10 @@ const Products = () => {
     setShowModal(true);
   };
 
+  const handleOpenCreateModal = () => {
+    setShowCreateModal(true);
+  };
+
   const SortIcon = ({ fieldKey }) => {
     if (sortConfig.key !== fieldKey) return null;
     return sortConfig.direction === "asc" ? (
@@ -184,8 +190,8 @@ const Products = () => {
     <div className="container mt-4" style={{ color: "white" }}>
       <h3 className="mb-3 text-center">Productos Disponibles</h3>
 
-      <Row className="mb-4 align-items-end">
-        <Col md={isAdmin ? 3 : 6}>
+      <Row className="mb-4 align-items-end g-2">
+        <Col md={isAdmin ? 3 : 5}>
           <Form.Control
             type="text"
             placeholder="Buscar por nombre..."
@@ -195,7 +201,7 @@ const Products = () => {
         </Col>
 
         {isAdmin && (
-          <Col md={3} className="mb-2 mb-md-0 text-center">
+          <Col md={3} className="text-center">
             <ButtonGroup>
               <ToggleButton
                 id="view-active"
@@ -234,7 +240,7 @@ const Products = () => {
           </Col>
         )}
 
-        <Col md={3}>
+        <Col md={2}>
           <Dropdown onSelect={handleTypeSelect} className="w-100">
             <Dropdown.Toggle variant="secondary" className="w-100">
               {currentFilterDisplay}
@@ -253,7 +259,7 @@ const Products = () => {
           </Dropdown>
         </Col>
 
-        <Col md={3}>
+        <Col md={2}>
           <Dropdown>
             <Dropdown.Toggle variant="secondary" className="w-100">
               Ordenar por <SortIcon fieldKey={sortConfig.key} />
@@ -268,6 +274,19 @@ const Products = () => {
             </Dropdown.Menu>
           </Dropdown>
         </Col>
+
+        {isAdmin && (
+          <Col md={2} className="text-end">
+            <Button
+              variant="danger"
+              className="w-100"
+              onClick={handleOpenCreateModal}
+              style={{ whiteSpace: "nowrap" }}
+            >
+              <PlusCircleFill className="me-1" /> Crear
+            </Button>
+          </Col>
+        )}
       </Row>
 
       {loading ? (
@@ -289,15 +308,21 @@ const Products = () => {
         />
       )}
 
-      {selectedProduct && (
-        <ItemModal
-          show={showModal}
-          handleClose={() => setShowModal(false)}
-          product={selectedProduct}
-          mode={modalMode}
-          onProductAction={fetchProducts}
-        />
-      )}
+      <ItemModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        product={selectedProduct}
+        mode={modalMode}
+        onProductAction={fetchProducts}
+      />
+
+      <ItemModal
+        show={showCreateModal}
+        handleClose={() => setShowCreateModal(false)}
+        mode="create"
+        itemType="product"
+        onProductAction={fetchProducts}
+      />
     </div>
   );
 };
