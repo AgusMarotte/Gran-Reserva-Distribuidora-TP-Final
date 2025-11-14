@@ -145,7 +145,7 @@ const UpdateProfileForm = () => {
             <Form.Label>Nombre</Form.Label>
             <Form.Control
               type="text"
-              name="name"
+              name="username"
               value={userData.name}
               onChange={handleDataChange}
               className="bg-dark text-white border-secondary"

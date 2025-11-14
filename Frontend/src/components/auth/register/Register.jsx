@@ -129,7 +129,7 @@ const Register = () => {
                     <Form.Label>Nombre</Form.Label>
                     <Form.Control
                       type="text"
-                      name="name"
+                      name="username"
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Nombre"

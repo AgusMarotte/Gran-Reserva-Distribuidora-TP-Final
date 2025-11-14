@@ -110,7 +110,7 @@ const CreateUserModal = ({ show, onHide, onUserCreated, token }) => {
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
-                name="name"
+                name="username"
                 value={newUserFormData.name}
                 onChange={handleNewUserFormChange}
                 required

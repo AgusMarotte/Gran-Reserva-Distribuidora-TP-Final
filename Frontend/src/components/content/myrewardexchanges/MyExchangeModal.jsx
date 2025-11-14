@@ -4,7 +4,7 @@ import { Modal, Button } from "react-bootstrap";
 const MyExchangeModal = ({ show, onHide, exchange }) => {
   const formatDateTime = (dateString) => {
     if (!dateString) return "Sin fecha";
-    const date = new Date(dateString?.split(".")[0] || dateString);
+    const date = new Date(dateString);
     return date.toLocaleString("es-AR", {
       day: "2-digit",
       month: "2-digit",
