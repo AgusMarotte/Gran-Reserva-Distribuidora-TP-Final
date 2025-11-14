@@ -93,7 +93,6 @@ const Login = ({ onLogin }) => {
       } else {
         toast.success("Login exitoso");
         const payload = parseJwt(token);
-        console.log("Payload del JWT (revisa el rol):", payload);
         const userRole = payload ? payload.role : "User";
         const isAdmin = userRole === "Admin" || userRole === "SuperAdmin";
 
@@ -109,14 +108,12 @@ const Login = ({ onLogin }) => {
 
             if (pointsResponse.ok) {
               const pointsData = await pointsResponse.json();
-              console.log("Respuesta de la API de puntos:", pointsData);
               points = pointsData.points;
             }
           } catch (pointsError) {
             console.error("Error fetching user points:", pointsError);
           }
         }
-        console.log("Puntos que se enviarán a App.jsx:", points);
         onLogin(token, isAdmin, points);
         navigate("/");
       }

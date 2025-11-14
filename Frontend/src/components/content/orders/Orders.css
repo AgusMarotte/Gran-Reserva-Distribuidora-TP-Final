@@ -12,10 +12,6 @@
 }
 
 .orders-input {
-  color: rgba(132, 52, 54);
+  color: black !important;
   font-weight: 500;
-}
-
-.orders-input::placeholder {
-  color: rgba(132, 52, 54, 0.6);
 }

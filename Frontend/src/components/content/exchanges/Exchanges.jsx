@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   ListGroup,
   Modal,
@@ -56,6 +56,79 @@ const Exchanges = () => {
     fetchExchanges();
   }, []);
 
+  const looksLikeUUID = (s) => {
+    if (!s) return false;
+    const trimmed = s.trim();
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(trimmed);
+  };
+
+  useEffect(() => {
+    const searchByQR = async (query) => {
+      const token = localStorage.getItem("token");
+      const trimmed = query.trim();
+      if (looksLikeUUID(trimmed)) {
+        try {
+          const resp = await fetch(
+            `${API_EXCHANGE_URL}/qr/${encodeURIComponent(trimmed)}`,
+            {
+              headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
+            }
+          );
+          if (resp.ok) {
+            const exchange = await resp.json();
+            setFilteredExchanges(exchange ? [exchange] : []);
+            return;
+          }
+        } catch {}
+      }
+      const lower = trimmed.toLowerCase();
+      const results = exchanges.filter((ex) => {
+        if (!ex) return false;
+        if (ex.qrCodeBase64 && ex.qrCodeBase64.toLowerCase().includes(lower))
+          return true;
+        if (ex.clientName && ex.clientName.toLowerCase().includes(lower))
+          return true;
+        if (!Number.isNaN(Number(trimmed)) && String(ex.id) === String(trimmed))
+          return true;
+        for (const key of Object.keys(ex)) {
+          const val = ex[key];
+          if (typeof val === "string" && val.toLowerCase().includes(lower))
+            return true;
+        }
+        return false;
+      });
+      setFilteredExchanges(results);
+    };
+
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      setFilteredExchanges(exchanges);
+      return;
+    }
+    if (searchType === "name") {
+      setFilteredExchanges(
+        exchanges.filter((ex) => {
+          if (!ex.clientName) return false;
+          const parts = ex.clientName.toLowerCase().split(" ");
+          return parts.some((p) => p.includes(query));
+        })
+      );
+      return;
+    }
+    if (searchType === "id") {
+      setFilteredExchanges(
+        exchanges.filter((ex) => String(ex.id).includes(query))
+      );
+      return;
+    }
+    if (searchType === "qr") {
+      searchByQR(searchQuery);
+      return;
+    }
+  }, [searchQuery, searchType, exchanges]);
+
   const handleShowModal = (exchange) => {
     setSelectedExchange(exchange);
     setShowModal(true);
@@ -76,79 +149,6 @@ const Exchanges = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const looksLikeUUID = (s) => {
-    if (!s) return false;
-    const trimmed = s.trim();
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(trimmed);
-  };
-
-  const searchByQR = async (query) => {
-    const token = localStorage.getItem("token");
-    const trimmed = query.trim();
-    if (looksLikeUUID(trimmed)) {
-      try {
-        const resp = await fetch(
-          `${API_EXCHANGE_URL}/qr/${encodeURIComponent(trimmed)}`,
-          {
-            headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
-          }
-        );
-        if (resp.ok) {
-          const exchange = await resp.json();
-          setFilteredExchanges(exchange ? [exchange] : []);
-          return;
-        }
-      } catch {}
-    }
-    const lower = trimmed.toLowerCase();
-    const results = exchanges.filter((ex) => {
-      if (!ex) return false;
-      if (ex.qrCodeBase64 && ex.qrCodeBase64.toLowerCase().includes(lower))
-        return true;
-      if (ex.clientName && ex.clientName.toLowerCase().includes(lower))
-        return true;
-      if (!Number.isNaN(Number(trimmed)) && String(ex.id) === String(trimmed))
-        return true;
-      for (const key of Object.keys(ex)) {
-        const val = ex[key];
-        if (typeof val === "string" && val.toLowerCase().includes(lower))
-          return true;
-      }
-      return false;
-    });
-    setFilteredExchanges(results);
-  };
-
-  const handleSearch = async () => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) {
-      setFilteredExchanges(exchanges);
-      return;
-    }
-    if (searchType === "name") {
-      setFilteredExchanges(
-        exchanges.filter((ex) => {
-          if (!ex.clientName) return false;
-          const parts = ex.clientName.toLowerCase().split(" ");
-          return parts.some((p) => p.includes(query));
-        })
-      );
-      return;
-    }
-    if (searchType === "id") {
-      setFilteredExchanges(
-        exchanges.filter((ex) => String(ex.id) === searchQuery)
-      );
-      return;
-    }
-    if (searchType === "qr") {
-      await searchByQR(searchQuery);
-      return;
-    }
   };
 
   return (
@@ -204,14 +204,10 @@ const Exchanges = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="orders-input"
         />
-        <Button className="orders-btn" onClick={handleSearch}>
-          Buscar
-        </Button>
         <Button
           variant="outline-light"
           onClick={() => {
             setSearchQuery("");
-            setFilteredExchanges(exchanges);
           }}
         >
           Limpiar

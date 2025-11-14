@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { ToastContainer, Slide } from "react-toastify";
+import { ToastContainer, Slide, toast } from "react-toastify";
 import NavBar from "./components/ui/navbar/NavBar.jsx";
 import Footer from "./components/ui/footer/Footer.jsx";
 import Home from "./components/content/home/Home.jsx";

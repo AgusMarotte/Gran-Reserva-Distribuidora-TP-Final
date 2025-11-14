@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   ListGroup,
   Modal,
@@ -56,6 +56,83 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
+  const looksLikeUUID = (s) => {
+    if (!s) return false;
+    const trimmed = s.trim();
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(trimmed);
+  };
+
+  useEffect(() => {
+    const searchByQR = async (query) => {
+      const token = localStorage.getItem("token");
+      const trimmed = query.trim();
+      if (looksLikeUUID(trimmed)) {
+        try {
+          const resp = await fetch(
+            `${API_ORDER_URL}/qr/${encodeURIComponent(trimmed)}`,
+            {
+              headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
+            }
+          );
+          if (resp.ok) {
+            const order = await resp.json();
+            setFilteredOrders(order ? [order] : []);
+            return;
+          }
+        } catch {}
+      }
+      const lower = trimmed.toLowerCase();
+      const results = orders.filter((order) => {
+        if (!order) return false;
+        if (
+          order.qrCodeBase64 &&
+          order.qrCodeBase64.toLowerCase().includes(lower)
+        )
+          return true;
+        if (order.clientName && order.clientName.toLowerCase().includes(lower))
+          return true;
+        if (
+          !Number.isNaN(Number(trimmed)) &&
+          String(order.id) === String(trimmed)
+        )
+          return true;
+        for (const key of Object.keys(order)) {
+          const val = order[key];
+          if (typeof val === "string" && val.toLowerCase().includes(lower))
+            return true;
+        }
+        return false;
+      });
+      setFilteredOrders(results);
+    };
+
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      setFilteredOrders(orders);
+      return;
+    }
+    if (searchType === "name") {
+      setFilteredOrders(
+        orders.filter((o) => {
+          if (!o.clientName) return false;
+          const parts = o.clientName.toLowerCase().split(" ");
+          return parts.some((p) => p.includes(query));
+        })
+      );
+      return;
+    }
+    if (searchType === "id") {
+      setFilteredOrders(orders.filter((o) => String(o.id).includes(query)));
+      return;
+    }
+    if (searchType === "qr") {
+      searchByQR(searchQuery);
+      return;
+    }
+  }, [searchQuery, searchType, orders]);
+
   const handleShowModal = (order) => {
     setSelectedOrder(order);
     setShowModal(true);
@@ -78,83 +155,6 @@ const Orders = () => {
     });
   };
 
-  const looksLikeUUID = (s) => {
-    if (!s) return false;
-    const trimmed = s.trim();
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(trimmed);
-  };
-
-  const searchByQR = async (query) => {
-    const token = localStorage.getItem("token");
-    const trimmed = query.trim();
-    if (looksLikeUUID(trimmed)) {
-      try {
-        const resp = await fetch(
-          `${API_ORDER_URL}/qr/${encodeURIComponent(trimmed)}`,
-          {
-            headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
-          }
-        );
-        if (resp.ok) {
-          const order = await resp.json();
-          setFilteredOrders(order ? [order] : []);
-          return;
-        }
-      } catch {}
-    }
-    const lower = trimmed.toLowerCase();
-    const results = orders.filter((order) => {
-      if (!order) return false;
-      if (
-        order.qrCodeBase64 &&
-        order.qrCodeBase64.toLowerCase().includes(lower)
-      )
-        return true;
-      if (order.clientName && order.clientName.toLowerCase().includes(lower))
-        return true;
-      if (
-        !Number.isNaN(Number(trimmed)) &&
-        String(order.id) === String(trimmed)
-      )
-        return true;
-      for (const key of Object.keys(order)) {
-        const val = order[key];
-        if (typeof val === "string" && val.toLowerCase().includes(lower))
-          return true;
-      }
-      return false;
-    });
-    setFilteredOrders(results);
-  };
-
-  const handleSearch = async () => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) {
-      setFilteredOrders(orders);
-      return;
-    }
-    if (searchType === "name") {
-      setFilteredOrders(
-        orders.filter((o) => {
-          if (!o.clientName) return false;
-          const parts = o.clientName.toLowerCase().split(" ");
-          return parts.some((p) => p.includes(query));
-        })
-      );
-      return;
-    }
-    if (searchType === "id") {
-      setFilteredOrders(orders.filter((o) => String(o.id) === searchQuery));
-      return;
-    }
-    if (searchType === "qr") {
-      await searchByQR(searchQuery);
-      return;
-    }
-  };
-
   const handleChangeState = async (newState) => {
     if (!selectedOrder) return;
     try {
@@ -167,7 +167,7 @@ const Orders = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ newState }),
+          body: JSON.stringify({ NewState: newState }),
         }
       );
       if (!response.ok) throw new Error("No se pudo actualizar el estado.");
@@ -240,14 +240,10 @@ const Orders = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="orders-input"
         />
-        <Button className="orders-btn" onClick={handleSearch}>
-          Buscar
-        </Button>
         <Button
           variant="outline-light"
           onClick={() => {
             setSearchQuery("");
-            setFilteredOrders(orders);
           }}
         >
           Limpiar
@@ -316,11 +312,11 @@ const Orders = () => {
                 value={selectedOrder.state}
                 onChange={(e) => handleChangeState(e.target.value)}
               >
-                <option value="Pending">Pending</option>
-                <option value="Preparing">Preparing</option>
-                <option value="Sent">Sent</option>
-                <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="Pending">Pendiente</option>
+                <option value="Processing">En Proceso</option>
+                <option value="Sent">Enviado</option>
+                <option value="Delivered">Entregado</option>
+                <option value="Cancelled">Cancelado</option>
               </Form.Select>
             </Form.Group>
             <hr />

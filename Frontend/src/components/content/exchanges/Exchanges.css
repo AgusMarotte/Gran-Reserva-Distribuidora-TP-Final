@@ -15,7 +15,3 @@
   color: rgba(132, 52, 54);
   font-weight: 500;
 }
-
-.exchanges-input::placeholder {
-  color: rgba(132, 52, 54, 0.6);
-}
