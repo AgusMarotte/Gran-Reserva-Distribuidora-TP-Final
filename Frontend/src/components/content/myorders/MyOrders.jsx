@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { ListGroup, Modal, Button, Spinner } from "react-bootstrap";
+import { ListGroup, Spinner } from "react-bootstrap";
+import MyOrderModal from "./MyOrderModal";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -127,103 +128,11 @@ const MyOrders = () => {
         </ListGroup>
       )}
 
-      {selectedOrder && (
-        <Modal
-          show={showModal}
-          onHide={handleCloseModal}
-          centered
-          data-bs-theme="dark"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>
-              Detalles de la Orden ID#{selectedOrder.id}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p className="mb-1">
-              <strong>Fecha:</strong> {formatDateTime(selectedOrder.date)}
-            </p>
-            <p className="mb-1">
-              <strong>Estado:</strong> {selectedOrder.state}
-            </p>
-            <p>
-              <strong>Puntos Ganados:</strong>{" "}
-              {selectedOrder.pointsEarned || selectedOrder.total * 0.01}
-            </p>
-
-            <h6 className="mt-4">Productos:</h6>
-            <ListGroup variant="flush">
-              {selectedOrder.orderDetails?.length > 0 ? (
-                selectedOrder.orderDetails.map((detail, idx) => {
-                  const nombre = detail.productName || "Producto sin nombre";
-                  const cantidad = detail.amount || 1;
-                  const precio = detail.unitaryPrice || 0;
-                  const subtotal = precio * cantidad;
-
-                  return (
-                    <ListGroup.Item
-                      key={idx}
-                      className="bg-transparent text-white px-0"
-                    >
-                      {nombre}
-                      <div className="d-flex justify-content-between text-secondary">
-                        <span>
-                          $
-                          {precio.toLocaleString("es-AR", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          c/u x {cantidad}
-                        </span>
-                        <strong>
-                          $
-                          {subtotal.toLocaleString("es-AR", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </strong>
-                      </div>
-                    </ListGroup.Item>
-                  );
-                })
-              ) : (
-                <ListGroup.Item className="bg-transparent text-white px-0">
-                  No hay productos en esta orden.
-                </ListGroup.Item>
-              )}
-            </ListGroup>
-
-            {selectedOrder.qrCodeBase64 && (
-              <div className="text-center my-3">
-                <h6>Código QR:</h6>
-                <img
-                  src={`data:image/png;base64,${selectedOrder.qrCodeBase64}`}
-                  alt={`Código QR para Orden #${selectedOrder.id}`}
-                  style={{
-                    width: "150px",
-                    height: "150px",
-                    background: "white",
-                    padding: "5px",
-                  }}
-                />
-              </div>
-            )}
-
-            <hr className="my-2" />
-            <div className="d-flex justify-content-end">
-              <h5 className="mb-0">
-                Total: $
-                {selectedOrder.total?.toLocaleString("es-AR", {
-                  minimumFractionDigits: 2,
-                })}
-              </h5>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+      <MyOrderModal
+        show={showModal}
+        onHide={handleCloseModal}
+        order={selectedOrder}
+      />
     </div>
   );
 };

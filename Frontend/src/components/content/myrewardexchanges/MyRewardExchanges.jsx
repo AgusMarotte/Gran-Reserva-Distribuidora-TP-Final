@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { ListGroup, Modal, Button, Spinner } from "react-bootstrap";
+import { ListGroup, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import MyExchangeModal from "./MyExchangeModal";
 
 const MyRewardExchanges = () => {
   const [exchanges, setExchanges] = useState([]);
@@ -125,56 +126,11 @@ const MyRewardExchanges = () => {
         </ListGroup>
       )}
 
-      {selectedExchange && (
-        <Modal
-          show={showModal}
-          onHide={handleCloseModal}
-          centered
-          data-bs-theme="dark"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>
-              Detalles del Canje ID#{selectedExchange.id}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p className="mb-1">
-              <strong>Recompensa:</strong> {selectedExchange.rewardName}
-            </p>
-            <p className="mb-1">
-              <strong>Fecha:</strong> {formatDateTime(selectedExchange.date)}
-            </p>
-
-            {selectedExchange.qrCodeBase64 && (
-              <div className="text-center my-4">
-                <h6>Código QR:</h6>
-                <img
-                  src={`data:image/png;base64,${selectedExchange.qrCodeBase64}`}
-                  alt={`Código QR para Canje #${selectedExchange.id}`}
-                  style={{
-                    width: "150px",
-                    height: "150px",
-                    background: "white",
-                    padding: "5px",
-                  }}
-                />
-              </div>
-            )}
-
-            <hr className="my-2" />
-            <div className="d-flex justify-content-end">
-              <h5 className="mb-0">
-                Total: {selectedExchange.pointsUsed} Puntos
-              </h5>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+      <MyExchangeModal
+        show={showModal}
+        onHide={handleCloseModal}
+        exchange={selectedExchange}
+      />
     </div>
   );
 };
