@@ -1,0 +1,17 @@
+.admin-search-btn {
+  background-color: rgba(132, 52, 54) !important;
+  border: none !important;
+}
+
+.admin-search-btn:hover {
+  background-color: rgba(102, 32, 34) !important;
+}
+
+.admin-search-input {
+  color: rgba(132, 52, 54);
+  font-weight: 500;
+}
+
+.admin-search-input::placeholder {
+  color: rgba(132, 52, 54, 0.6);
+}
