@@ -17,6 +17,7 @@ const Exchanges = () => {
   const [searchType, setSearchType] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
   const [token, setToken] = useState(null);
+  const [qrSearchResult, setQrSearchResult] = useState(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -64,14 +65,47 @@ const Exchanges = () => {
     return uuidRegex.test(trimmed);
   };
 
+  useEffect(() => {
+    const fetchByQR = async (query) => {
+      if (!token) return;
+      setLoading(true);
+      try {
+        const resp = await fetch(
+          `${API_EXCHANGE_URL}/qr/${encodeURIComponent(query)}`,
+          {
+            headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
+          }
+        );
+        if (resp.ok) {
+          const exchange = await resp.json();
+          setQrSearchResult(exchange ? [exchange] : []);
+        } else {
+          setQrSearchResult([]);
+        }
+      } catch (err) {
+        toast.error("Error al buscar por QR");
+        setQrSearchResult([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const query = searchQuery.trim();
+    if (searchType === "qr" && looksLikeUUID(query)) {
+      fetchByQR(query);
+    } else {
+      setQrSearchResult(null);
+    }
+  }, [searchQuery, searchType, token]);
+
   const filteredExchanges = useMemo(() => {
+    if (qrSearchResult !== null) {
+      return qrSearchResult;
+    }
+
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
       return exchanges;
-    }
-
-    if (searchType === "qr" && looksLikeUUID(query)) {
-      return exchanges.filter((e) => e.qrCode?.toLowerCase() === query);
     }
 
     return exchanges.filter((e) => {
@@ -86,7 +120,7 @@ const Exchanges = () => {
       }
       return false;
     });
-  }, [exchanges, searchQuery, searchType]);
+  }, [exchanges, searchQuery, searchType, qrSearchResult]);
 
   const handleShowModal = (exchange) => {
     setSelectedExchange(exchange);

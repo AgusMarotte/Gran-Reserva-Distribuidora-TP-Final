@@ -17,6 +17,7 @@ const Orders = () => {
   const [searchType, setSearchType] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
   const [token, setToken] = useState(null);
+  const [qrSearchResult, setQrSearchResult] = useState(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -64,14 +65,47 @@ const Orders = () => {
     return uuidRegex.test(trimmed);
   };
 
+  useEffect(() => {
+    const fetchByQR = async (query) => {
+      if (!token) return;
+      setLoading(true);
+      try {
+        const resp = await fetch(
+          `${API_ORDER_URL}/qr/${encodeURIComponent(query)}`,
+          {
+            headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
+          }
+        );
+        if (resp.ok) {
+          const order = await resp.json();
+          setQrSearchResult(order ? [order] : []);
+        } else {
+          setQrSearchResult([]);
+        }
+      } catch (err) {
+        toast.error("Error al buscar por QR");
+        setQrSearchResult([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const query = searchQuery.trim();
+    if (searchType === "qr" && looksLikeUUID(query)) {
+      fetchByQR(query);
+    } else {
+      setQrSearchResult(null);
+    }
+  }, [searchQuery, searchType, token]);
+
   const filteredOrders = useMemo(() => {
+    if (qrSearchResult !== null) {
+      return qrSearchResult;
+    }
+
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
       return orders;
-    }
-
-    if (searchType === "qr" && looksLikeUUID(query)) {
-      return orders.filter((o) => o.qrCode?.toLowerCase() === query);
     }
 
     return orders.filter((o) => {
@@ -86,7 +120,7 @@ const Orders = () => {
       }
       return false;
     });
-  }, [orders, searchQuery, searchType]);
+  }, [orders, searchQuery, searchType, qrSearchResult]);
 
   const handleShowModal = (order) => {
     setSelectedOrder(order);
