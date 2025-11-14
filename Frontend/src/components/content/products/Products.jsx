@@ -12,7 +12,7 @@ import {
   ToggleButton,
 } from "react-bootstrap";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
-import { useCart } from "../cart/Cart.jsx";
+import { useCart } from "../../../context/CartContext.jsx";
 import { useNavigate } from "react-router-dom";
 import "./Products.css";
 
@@ -30,7 +30,7 @@ const Products = () => {
     direction: "asc",
   });
 
-  const [viewMode, setViewMode] = useState("active"); 
+  const [viewMode, setViewMode] = useState("active");
 
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("edit");

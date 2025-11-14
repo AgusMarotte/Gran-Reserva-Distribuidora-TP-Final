@@ -10,7 +10,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "/icon-w.svg";
 import CountUp from "../countup/CountUp.jsx";
-import { useCart } from "../../content/cart/Cart.jsx";
+import { useCart } from "../../../context/CartContext.jsx";
 import "./NavBar.css";
 
 const NavBar = ({ token, isAdmin, onLogout, userPoints }) => {

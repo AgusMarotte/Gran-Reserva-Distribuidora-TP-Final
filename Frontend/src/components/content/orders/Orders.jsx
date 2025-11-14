@@ -1,14 +1,8 @@
-import { useEffect, useState, useMemo } from "react";
-import {
-  ListGroup,
-  Modal,
-  Button,
-  Spinner,
-  Form,
-  ToggleButton,
-  ButtonGroup,
-  Col,
-} from "react-bootstrap";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { ListGroup, Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
+import AdminSearchControls from "../../ui/adminsearchcontrols/AdminSearchControls";
+import OrderModal from "./OrderModal";
 import "./Orders.css";
 
 const API_ORDER_URL =
@@ -16,45 +10,51 @@ const API_ORDER_URL =
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchType, setSearchType] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No se encontró el token de autenticación.");
-          setLoading(false);
-          return;
-        }
-        const response = await fetch(API_ORDER_URL, {
-          headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
-        });
-        if (!response.ok) throw new Error("Error al obtener las órdenes.");
-        const data = await response.json();
-        const sortedData = [...data].sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
-        );
-        setOrders(sortedData);
-        setFilteredOrders(sortedData);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-        setOrders([]);
-        setFilteredOrders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
   }, []);
+
+  const fetchOrders = useCallback(async () => {
+    if (!token) {
+      setError("No se encontró el token de autenticación.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(API_ORDER_URL, {
+        headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
+      });
+      if (!response.ok) throw new Error("Error al obtener las órdenes.");
+      const data = await response.json();
+      const sortedData = [...data].sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setOrders(sortedData);
+    } catch (err) {
+      setError(err.message);
+      setOrders([]);
+      toast.error(err.message || "Error al cargar órdenes.");
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchOrders();
+    }
+  }, [fetchOrders, token]);
 
   const looksLikeUUID = (s) => {
     if (!s) return false;
@@ -64,74 +64,29 @@ const Orders = () => {
     return uuidRegex.test(trimmed);
   };
 
-  useEffect(() => {
-    const searchByQR = async (query) => {
-      const token = localStorage.getItem("token");
-      const trimmed = query.trim();
-      if (looksLikeUUID(trimmed)) {
-        try {
-          const resp = await fetch(
-            `${API_ORDER_URL}/qr/${encodeURIComponent(trimmed)}`,
-            {
-              headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
-            }
-          );
-          if (resp.ok) {
-            const order = await resp.json();
-            setFilteredOrders(order ? [order] : []);
-            return;
-          }
-        } catch {}
-      }
-      const lower = trimmed.toLowerCase();
-      const results = orders.filter((order) => {
-        if (!order) return false;
-        if (
-          order.qrCodeBase64 &&
-          order.qrCodeBase64.toLowerCase().includes(lower)
-        )
-          return true;
-        if (order.clientName && order.clientName.toLowerCase().includes(lower))
-          return true;
-        if (
-          !Number.isNaN(Number(trimmed)) &&
-          String(order.id) === String(trimmed)
-        )
-          return true;
-        for (const key of Object.keys(order)) {
-          const val = order[key];
-          if (typeof val === "string" && val.toLowerCase().includes(lower))
-            return true;
-        }
-        return false;
-      });
-      setFilteredOrders(results);
-    };
-
+  const filteredOrders = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
-      setFilteredOrders(orders);
-      return;
+      return orders;
     }
-    if (searchType === "name") {
-      setFilteredOrders(
-        orders.filter((o) => {
-          if (!o.clientName) return false;
-          const parts = o.clientName.toLowerCase().split(" ");
-          return parts.some((p) => p.includes(query));
-        })
-      );
-      return;
+
+    if (searchType === "qr" && looksLikeUUID(query)) {
+      return orders.filter((o) => o.qrCode?.toLowerCase() === query);
     }
-    if (searchType === "id") {
-      setFilteredOrders(orders.filter((o) => String(o.id).includes(query)));
-      return;
-    }
-    if (searchType === "qr") {
-      searchByQR(searchQuery);
-      return;
-    }
-  }, [searchQuery, searchType, orders]);
+
+    return orders.filter((o) => {
+      if (searchType === "name") {
+        return o.clientName?.toLowerCase().includes(query);
+      }
+      if (searchType === "id") {
+        return String(o.id).includes(query);
+      }
+      if (searchType === "qr") {
+        return o.qrCode?.toLowerCase().includes(query);
+      }
+      return false;
+    });
+  }, [orders, searchQuery, searchType]);
 
   const handleShowModal = (order) => {
     setSelectedOrder(order);
@@ -158,7 +113,6 @@ const Orders = () => {
   const handleChangeState = async (newState) => {
     if (!selectedOrder) return;
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(
         `${API_ORDER_URL}/${selectedOrder.id}/state`,
         {
@@ -171,84 +125,48 @@ const Orders = () => {
         }
       );
       if (!response.ok) throw new Error("No se pudo actualizar el estado.");
+
+      const updatedOrder = { ...selectedOrder, state: newState };
       setOrders((prev) =>
-        prev.map((o) =>
-          o.id === selectedOrder.id ? { ...o, state: newState } : o
-        )
+        prev.map((o) => (o.id === selectedOrder.id ? updatedOrder : o))
       );
-      setFilteredOrders((prev) =>
-        prev.map((o) =>
-          o.id === selectedOrder.id ? { ...o, state: newState } : o
-        )
-      );
-      setSelectedOrder((prev) => ({ ...prev, state: newState }));
+      setSelectedOrder(updatedOrder);
+      toast.success(`Orden #${selectedOrder.id} actualizada a ${newState}.`);
     } catch (err) {
-      alert("Error al cambiar el estado: " + err.message);
+      toast.error("Error al cambiar el estado: " + err.message);
     }
+  };
+
+  const searchTypeConfig = {
+    searchType,
+    onSearchTypeChange: setSearchType,
+    options: [
+      { value: "name", label: "Nombre / Apellido" },
+      { value: "id", label: "ID" },
+      { value: "qr", label: "QR" },
+    ],
+  };
+
+  const searchQueryConfig = {
+    searchQuery,
+    onSearchQueryChange: setSearchQuery,
+    placeholder: "Ingresá el valor a buscar...",
+  };
+
+  const clearButtonConfig = {
+    label: "Limpiar",
+    onClick: () => setSearchQuery(""),
   };
 
   return (
     <div className="container text-white py-5">
       <h2 className="mb-4 fw-bold">Todas las Órdenes</h2>
 
-      <div className="d-flex gap-2 mb-4">
-        <Col md={3} className="mb-2 mb-md-0 text-center">
-          <ButtonGroup>
-            <ToggleButton
-              id="search-name"
-              type="radio"
-              variant="outline-light"
-              name="searchType"
-              value="name"
-              checked={searchType === "name"}
-              onChange={() => setSearchType("name")}
-            >
-              Nombre / Apellido
-            </ToggleButton>
-            <ToggleButton
-              id="search-id"
-              type="radio"
-              variant="outline-light"
-              name="searchType"
-              value="id"
-              checked={searchType === "id"}
-              onChange={() => setSearchType("id")}
-            >
-              ID
-            </ToggleButton>
-            <ToggleButton
-              id="search-qr"
-              type="radio"
-              variant="outline-light"
-              name="searchType"
-              value="qr"
-              checked={searchType === "qr"}
-              onChange={() => setSearchType("qr")}
-            >
-              QR
-            </ToggleButton>
-          </ButtonGroup>
-        </Col>
-        <Form.Control
-          type="text"
-          placeholder={
-            searchType === "qr"
-              ? "Pega/escaneá el valor del QR..."
-              : "Ingresá el valor a buscar..."
-          }
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="orders-input"
-        />
-        <Button
-          variant="outline-light"
-          onClick={() => {
-            setSearchQuery("");
-          }}
-        >
-          Limpiar
-        </Button>
-      </div>
+      <AdminSearchControls
+        searchTypeConfig={searchTypeConfig}
+        searchQueryConfig={searchQueryConfig}
+        clearButtonConfig={clearButtonConfig}
+      />
 
       {loading ? (
         <div className="text-center py-5">
@@ -290,113 +208,12 @@ const Orders = () => {
         </ListGroup>
       )}
 
-      {selectedOrder && (
-        <Modal
-          show={showModal}
-          onHide={handleCloseModal}
-          centered
-          data-bs-theme="dark"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Orden ID#{selectedOrder.id}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              <strong>Fecha:</strong> {formatDateTime(selectedOrder.date)}
-            </p>
-            <Form.Group className="mb-3">
-              <Form.Label>
-                <strong>Estado:</strong>
-              </Form.Label>
-              <Form.Select
-                value={selectedOrder.state}
-                onChange={(e) => handleChangeState(e.target.value)}
-              >
-                <option value="Pending">Pendiente</option>
-                <option value="Processing">En Proceso</option>
-                <option value="Sent">Enviado</option>
-                <option value="Delivered">Entregado</option>
-                <option value="Cancelled">Cancelado</option>
-              </Form.Select>
-            </Form.Group>
-            <hr />
-            <h5>Datos del Cliente</h5>
-            <p>
-              <strong>Nombre:</strong> {selectedOrder.clientName}
-            </p>
-            <p>
-              <strong>ID Cliente:</strong> {selectedOrder.clientId}
-            </p>
-            <h6 className="mt-4">Productos:</h6>
-            <ListGroup variant="flush">
-              {selectedOrder.orderDetails?.length > 0 ? (
-                selectedOrder.orderDetails.map((detail, idx) => {
-                  const nombre = detail.productName || "Producto sin nombre";
-                  const cantidad = detail.amount || 1;
-                  const precio = detail.unitaryPrice || 0;
-                  const subtotal = precio * cantidad;
-                  return (
-                    <ListGroup.Item
-                      key={idx}
-                      className="bg-transparent text-white px-0"
-                    >
-                      {nombre}
-                      <div className="d-flex justify-content-between text-secondary">
-                        <span>
-                          $
-                          {precio.toLocaleString("es-AR", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          c/u x {cantidad}
-                        </span>
-                        <strong>
-                          $
-                          {subtotal.toLocaleString("es-AR", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </strong>
-                      </div>
-                    </ListGroup.Item>
-                  );
-                })
-              ) : (
-                <ListGroup.Item className="bg-transparent text-white px-0">
-                  No hay productos en esta orden.
-                </ListGroup.Item>
-              )}
-            </ListGroup>
-            {selectedOrder.qrCodeBase64 && (
-              <div className="text-center my-3">
-                <h6>Código QR:</h6>
-                <img
-                  src={`data:image/png;base64,${selectedOrder.qrCodeBase64}`}
-                  alt={`QR Orden #${selectedOrder.id}`}
-                  style={{
-                    width: "150px",
-                    height: "150px",
-                    background: "white",
-                    padding: "5px",
-                  }}
-                />
-              </div>
-            )}
-            <hr className="my-2" />
-            <div className="d-flex justify-content-end">
-              <h5 className="mb-0">
-                Total: $
-                {selectedOrder.total?.toLocaleString("es-AR", {
-                  minimumFractionDigits: 2,
-                })}
-              </h5>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+      <OrderModal
+        show={showModal}
+        onHide={handleCloseModal}
+        order={selectedOrder}
+        onStateChange={handleChangeState}
+      />
     </div>
   );
 };

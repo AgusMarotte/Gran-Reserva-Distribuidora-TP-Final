@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { ToastContainer, Slide, toast } from "react-toastify";
+import { ToastContainer, Slide } from "react-toastify";
 import NavBar from "./components/ui/navbar/NavBar.jsx";
 import Footer from "./components/ui/footer/Footer.jsx";
 import Home from "./components/content/home/Home.jsx";
@@ -20,7 +20,8 @@ import Settings from "./components/content/settings/Settings.jsx";
 import Orders from "./components/content/orders/Orders.jsx";
 import Users from "./components/content/users/Users.jsx";
 import Exchanges from "./components/content/exchanges/Exchanges.jsx";
-import AboutUs from "./components/content/aboutUs/AboutUs.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
+import AboutUs from "./components/content/aboutus/AboutUs.jsx";
 import "./App.css";
 
 function App() {
@@ -118,13 +119,14 @@ function App() {
 
   return (
     <Router basename="/Gran-Reserva-Distribuidora-TP-Final/">
-      <Cart onPointsUpdate={handlePointsUpdate}>
+      <CartProvider onPointsUpdate={handlePointsUpdate}>
         <NavBar
           token={token}
           isAdmin={isAdmin}
           onLogout={handleLogout}
           userPoints={userPoints}
         />
+        <Cart />
         <ToastContainer
           position="bottom-right"
           autoClose={3000}
@@ -145,7 +147,6 @@ function App() {
                 </Public>
               }
             />
-            <Route path="/aboutUs" element={<AboutUs />} /> 
             <Route
               path="/register"
               element={
@@ -213,12 +214,13 @@ function App() {
               }
             />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
         <Footer />
-      </Cart>
+      </CartProvider>
     </Router>
   );
 }

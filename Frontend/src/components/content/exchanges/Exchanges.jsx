@@ -1,14 +1,8 @@
-import { useEffect, useState, useMemo } from "react";
-import {
-  ListGroup,
-  Modal,
-  Button,
-  Spinner,
-  Form,
-  ToggleButton,
-  ButtonGroup,
-  Col,
-} from "react-bootstrap";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { ListGroup, Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
+import AdminSearchControls from "../../ui/adminsearchcontrols/AdminSearchControls";
+import ExchangeModal from "./ExchangeModal";
 import "./Exchanges.css";
 
 const API_EXCHANGE_URL =
@@ -16,45 +10,51 @@ const API_EXCHANGE_URL =
 
 const Exchanges = () => {
   const [exchanges, setExchanges] = useState([]);
-  const [filteredExchanges, setFilteredExchanges] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedExchange, setSelectedExchange] = useState(null);
   const [searchType, setSearchType] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    const fetchExchanges = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No se encontró el token de autenticación.");
-          setLoading(false);
-          return;
-        }
-        const response = await fetch(API_EXCHANGE_URL, {
-          headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
-        });
-        if (!response.ok) throw new Error("Error al obtener los canjes.");
-        const data = await response.json();
-        const sortedData = [...data].sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
-        );
-        setExchanges(sortedData);
-        setFilteredExchanges(sortedData);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-        setExchanges([]);
-        setFilteredExchanges([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchExchanges();
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
   }, []);
+
+  const fetchExchanges = useCallback(async () => {
+    if (!token) {
+      setError("No se encontró el token de autenticación.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(API_EXCHANGE_URL, {
+        headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
+      });
+      if (!response.ok) throw new Error("Error al obtener los canjes.");
+      const data = await response.json();
+      const sortedData = [...data].sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+      setExchanges(sortedData);
+    } catch (err) {
+      setError(err.message);
+      setExchanges([]);
+      toast.error(err.message || "Error al cargar canjes.");
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchExchanges();
+    }
+  }, [fetchExchanges, token]);
 
   const looksLikeUUID = (s) => {
     if (!s) return false;
@@ -64,70 +64,29 @@ const Exchanges = () => {
     return uuidRegex.test(trimmed);
   };
 
-  useEffect(() => {
-    const searchByQR = async (query) => {
-      const token = localStorage.getItem("token");
-      const trimmed = query.trim();
-      if (looksLikeUUID(trimmed)) {
-        try {
-          const resp = await fetch(
-            `${API_EXCHANGE_URL}/qr/${encodeURIComponent(trimmed)}`,
-            {
-              headers: { Authorization: `Bearer ${token}`, Accept: "*/*" },
-            }
-          );
-          if (resp.ok) {
-            const exchange = await resp.json();
-            setFilteredExchanges(exchange ? [exchange] : []);
-            return;
-          }
-        } catch {}
-      }
-      const lower = trimmed.toLowerCase();
-      const results = exchanges.filter((ex) => {
-        if (!ex) return false;
-        if (ex.qrCodeBase64 && ex.qrCodeBase64.toLowerCase().includes(lower))
-          return true;
-        if (ex.clientName && ex.clientName.toLowerCase().includes(lower))
-          return true;
-        if (!Number.isNaN(Number(trimmed)) && String(ex.id) === String(trimmed))
-          return true;
-        for (const key of Object.keys(ex)) {
-          const val = ex[key];
-          if (typeof val === "string" && val.toLowerCase().includes(lower))
-            return true;
-        }
-        return false;
-      });
-      setFilteredExchanges(results);
-    };
-
+  const filteredExchanges = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
-      setFilteredExchanges(exchanges);
-      return;
+      return exchanges;
     }
-    if (searchType === "name") {
-      setFilteredExchanges(
-        exchanges.filter((ex) => {
-          if (!ex.clientName) return false;
-          const parts = ex.clientName.toLowerCase().split(" ");
-          return parts.some((p) => p.includes(query));
-        })
-      );
-      return;
+
+    if (searchType === "qr" && looksLikeUUID(query)) {
+      return exchanges.filter((e) => e.qrCode?.toLowerCase() === query);
     }
-    if (searchType === "id") {
-      setFilteredExchanges(
-        exchanges.filter((ex) => String(ex.id).includes(query))
-      );
-      return;
-    }
-    if (searchType === "qr") {
-      searchByQR(searchQuery);
-      return;
-    }
-  }, [searchQuery, searchType, exchanges]);
+
+    return exchanges.filter((e) => {
+      if (searchType === "name") {
+        return e.clientName?.toLowerCase().includes(query);
+      }
+      if (searchType === "id") {
+        return String(e.id).includes(query);
+      }
+      if (searchType === "qr") {
+        return e.qrCode?.toLowerCase().includes(query);
+      }
+      return false;
+    });
+  }, [exchanges, searchQuery, searchType]);
 
   const handleShowModal = (exchange) => {
     setSelectedExchange(exchange);
@@ -151,68 +110,36 @@ const Exchanges = () => {
     });
   };
 
+  const searchTypeConfig = {
+    searchType,
+    onSearchTypeChange: setSearchType,
+    options: [
+      { value: "name", label: "Nombre / Apellido" },
+      { value: "id", label: "ID" },
+      { value: "qr", label: "QR" },
+    ],
+  };
+
+  const searchQueryConfig = {
+    searchQuery,
+    onSearchQueryChange: setSearchQuery,
+    placeholder: "Ingresá el valor a buscar...",
+  };
+
+  const clearButtonConfig = {
+    label: "Limpiar",
+    onClick: () => setSearchQuery(""),
+  };
+
   return (
     <div className="container text-white py-5">
       <h2 className="mb-4 fw-bold">Canjes de Recompensas</h2>
 
-      <div className="d-flex gap-2 mb-4">
-        <Col md={3} className="mb-2 mb-md-0 text-center">
-          <ButtonGroup>
-            <ToggleButton
-              id="search-name"
-              type="radio"
-              variant="outline-light"
-              name="searchType"
-              value="name"
-              checked={searchType === "name"}
-              onChange={() => setSearchType("name")}
-            >
-              Nombre / Apellido
-            </ToggleButton>
-            <ToggleButton
-              id="search-id"
-              type="radio"
-              variant="outline-light"
-              name="searchType"
-              value="id"
-              checked={searchType === "id"}
-              onChange={() => setSearchType("id")}
-            >
-              ID
-            </ToggleButton>
-            <ToggleButton
-              id="search-qr"
-              type="radio"
-              variant="outline-light"
-              name="searchType"
-              value="qr"
-              checked={searchType === "qr"}
-              onChange={() => setSearchType("qr")}
-            >
-              QR
-            </ToggleButton>
-          </ButtonGroup>
-        </Col>
-        <Form.Control
-          type="text"
-          placeholder={
-            searchType === "qr"
-              ? "Pega/escaneá el valor del QR..."
-              : "Ingresá el valor a buscar..."
-          }
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="orders-input"
-        />
-        <Button
-          variant="outline-light"
-          onClick={() => {
-            setSearchQuery("");
-          }}
-        >
-          Limpiar
-        </Button>
-      </div>
+      <AdminSearchControls
+        searchTypeConfig={searchTypeConfig}
+        searchQueryConfig={searchQueryConfig}
+        clearButtonConfig={clearButtonConfig}
+      />
 
       {loading ? (
         <div className="text-center py-5">
@@ -238,7 +165,7 @@ const Exchanges = () => {
                   <small className="text-secondary">
                     {formatDateTime(ex.date)}
                   </small>
-                  <div className="orders-client-name small fw-bold">
+                  <div className="exchanges-client-name small fw-bold">
                     {ex.clientName}
                   </div>
                 </div>
@@ -249,65 +176,11 @@ const Exchanges = () => {
         </ListGroup>
       )}
 
-      {selectedExchange && (
-        <Modal
-          show={showModal}
-          onHide={handleCloseModal}
-          centered
-          data-bs-theme="dark"
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Canje ID#{selectedExchange.id}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              <strong>Fecha:</strong> {formatDateTime(selectedExchange.date)}
-            </p>
-            <hr />
-            <h5>Datos del Cliente</h5>
-            <p>
-              <strong>Nombre:</strong> {selectedExchange.clientName}
-            </p>
-            <hr />
-            <h5>Recompensa</h5>
-            <ListGroup variant="flush">
-              <ListGroup.Item className="bg-transparent text-white px-0">
-                {selectedExchange.rewardName}
-                <div className="d-flex justify-content-between text-secondary">
-                  <span>Puntos usados:</span>
-                  <strong>{selectedExchange.pointsUsed} Puntos</strong>
-                </div>
-              </ListGroup.Item>
-            </ListGroup>
-            {selectedExchange.qrCodeBase64 && (
-              <div className="text-center my-3">
-                <h6>Código QR:</h6>
-                <img
-                  src={`data:image/png;base64,${selectedExchange.qrCodeBase64}`}
-                  alt={`QR Canje #${selectedExchange.id}`}
-                  style={{
-                    width: "150px",
-                    height: "150px",
-                    background: "white",
-                    padding: "5px",
-                  }}
-                />
-              </div>
-            )}
-            <hr className="my-2" />
-            <div className="d-flex justify-content-end">
-              <h5 className="mb-0">
-                Total: {selectedExchange.pointsUsed} Puntos
-              </h5>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+      <ExchangeModal
+        show={showModal}
+        onHide={handleCloseModal}
+        exchange={selectedExchange}
+      />
     </div>
   );
 };
