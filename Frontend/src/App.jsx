@@ -20,6 +20,7 @@ import Settings from "./components/content/settings/Settings.jsx";
 import Orders from "./components/content/orders/Orders.jsx";
 import Users from "./components/content/users/Users.jsx";
 import Exchanges from "./components/content/exchanges/Exchanges.jsx";
+import AboutUs from "./components/content/aboutUs/AboutUs.jsx";
 import "./App.css";
 
 function App() {
@@ -144,6 +145,7 @@ function App() {
                 </Public>
               }
             />
+            <Route path="/aboutUs" element={<AboutUs />} /> 
             <Route
               path="/register"
               element={
